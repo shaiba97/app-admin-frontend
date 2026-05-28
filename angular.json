@@ -31,7 +31,10 @@
             "server": "src/main.server.ts",
             "outputMode": "server",
             "security": {
-              "allowedHosts": []
+              "allowedHosts": [
+                "rihla-admin-frontend.onrender.com",
+                "localhost"
+              ]
             },
             "ssr": {
               "entry": "src/server.ts"
