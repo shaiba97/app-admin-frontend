@@ -29,6 +29,10 @@
               "src/styles.css"
             ],
             "server": "src/main.server.ts",
+            "allowedCommonJsDependencies": [
+              "debug",
+              "xmlhttprequest-ssl"
+            ],
             "outputMode": "server",
             "security": {
               "allowedHosts": [
