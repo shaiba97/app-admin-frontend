@@ -1,11 +1,11 @@
 import { Component, signal, inject, OnInit, OnDestroy } from '@angular/core'; import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router'; import { NgClass } from '@angular/common'; import { AuthService } from '../../core/services/auth/auth.service';
-import { LucideLayoutDashboard, LucideUsers, LucideWallet, LucideUser, LucideSun, LucideMoon, LucideLogOut, LucideMenu, LucideX, LucideChevronDown, LucidePhone, LucideNewspaper } from '@lucide/angular';
+import { LucideLayoutDashboard, LucideUsers, LucideWallet, LucideUser, LucideSun, LucideMoon, LucideLogOut, LucideMenu, LucideX, LucideChevronDown, LucidePhone, LucideNewspaper, LucideCircleDollarSign } from '@lucide/angular';
 import { NotificationBellComponent } from '../../shared/notification-bell/notification-bell.component';
 import { NotificationsService } from '../../core/services/notifications/notifications.service';
 
 @Component({
   selector: 'app-shell', standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, NgClass, LucideLayoutDashboard, LucideUsers, LucideWallet, LucideUser, LucideSun, LucideMoon, LucideLogOut, LucideMenu, LucideX, LucideChevronDown, LucidePhone, LucideNewspaper, NotificationBellComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, NgClass, LucideLayoutDashboard, LucideUsers, LucideWallet, LucideUser, LucideSun, LucideMoon, LucideLogOut, LucideMenu, LucideX, LucideChevronDown, LucidePhone, LucideNewspaper, LucideCircleDollarSign, NotificationBellComponent],
   templateUrl: './shell.html',
 })
 export class ShellComponent implements OnInit, OnDestroy {
@@ -23,6 +23,7 @@ export class ShellComponent implements OnInit, OnDestroy {
     { path: '/dashboard', label: 'الرئيسية', icon: 'layout-dashboard' },
     { path: '/users', label: 'المستخدمون', icon: 'users' },
     { path: '/financial', label: 'المالية', icon: 'wallet' },
+    { path: '/payout', label: 'المدفوعات', icon: 'circle-dollar-sign' },
     { path: '/support-contacts', label: 'جهات الاتصال', icon: 'phone' },
     { path: '/blog', label: 'المدونة', icon: 'newspaper' },
     { path: '/profile', label: 'الملف الشخصي', icon: 'user' },

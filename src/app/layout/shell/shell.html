@@ -21,6 +21,7 @@
               @case ('user') { <svg lucideUser class="w-5 h-5 flex-shrink-0"></svg> }
               @case ('phone') { <svg lucidePhone class="w-5 h-5 flex-shrink-0"></svg> }
               @case ('newspaper') { <svg lucideNewspaper class="w-5 h-5 flex-shrink-0"></svg> }
+              @case ('circle-dollar-sign') { <svg lucideCircleDollarSign class="w-5 h-5 flex-shrink-0"></svg> }
             }
             @if (sidebarOpen()) { <span class="text-sm font-semibold whitespace-nowrap">{{ item.label }}</span> }
             @if (rla.isActive) { <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full bg-white"></div> }
@@ -103,6 +104,8 @@
           @case ('wallet') { <svg lucideWallet class="w-5 h-5"></svg> }
           @case ('phone') { <svg lucidePhone class="w-5 h-5"></svg> }
           @case ('user') { <svg lucideUser class="w-5 h-5"></svg> }
+          @case ('newspaper') { <svg lucideNewspaper class="w-5 h-5"></svg> }
+          @case ('circle-dollar-sign') { <svg lucideCircleDollarSign class="w-5 h-5"></svg> }
         }
         <span class="text-[9px] font-semibold whitespace-nowrap">{{ item.label }}</span>
       </a>
