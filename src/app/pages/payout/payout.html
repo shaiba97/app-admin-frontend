@@ -181,7 +181,7 @@
                     <tr class="border-b border-[var(--border)] hover:bg-[var(--bg-base)] transition-colors">
                       <td class="px-4 py-3 text-xs font-semibold text-[var(--text-primary)]">{{ req.company?.name ?? '—' }}</td>
                       <td class="px-4 py-3 text-xs font-bold tabular-nums text-[var(--text-primary)]">{{ formatAmount(req.amount) }} <span class="text-[10px] font-normal text-[var(--text-muted)]">ج</span></td>
-                      <td class="px-4 py-3 text-xs text-[var(--text-secondary)]">{{ req.tripId ? req.tripId : 'جميع الرحلات' }}</td>
+                      <td class="px-4 py-3 text-xs text-[var(--text-secondary)]">{{ req.trip ? (req.trip.fromCity + ' ← ' + req.trip.toCity) : 'جميع الرحلات' }}</td>
                       <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold" [class]="statusClasses(req.status).join(' ')">{{ statusLabel(req.status) }}</span></td>
                       <td class="px-4 py-3 text-[10px] text-[var(--text-muted)] whitespace-nowrap">{{ fmtDateTime(req.createdAt) }}</td>
                       <td class="px-4 py-3 text-xs text-[var(--text-secondary)] max-w-[150px] truncate">{{ req.note || '—' }}</td>
@@ -230,7 +230,7 @@
                 </div>
                 <div class="flex items-center justify-between">
                   <span class="text-xs text-[var(--text-muted)]">الرحلة</span>
-                  <span class="text-xs text-[var(--text-secondary)]">{{ req.tripId ? req.tripId : 'جميع الرحلات' }}</span>
+                  <span class="text-xs text-[var(--text-secondary)]">{{ req.trip ? (req.trip.fromCity + ' ← ' + req.trip.toCity) : 'جميع الرحلات' }}</span>
                 </div>
                 <div class="flex items-center justify-between">
                   <span class="text-xs text-[var(--text-muted)]">التاريخ</span>
