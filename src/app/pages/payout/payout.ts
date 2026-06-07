@@ -1,12 +1,12 @@
 import { Component, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { LucideBuilding2, LucideBus, LucideArrowLeft, LucideCheck, LucideX, LucideClock, LucideLoaderCircle, LucideWallet, LucideCircleDollarSign, LucideChevronLeft, LucideChevronRight, LucideActivity, LucideReceiptText, LucideRefreshCw, LucideAlertCircle } from '@lucide/angular';
+import { LucideBuilding2, LucideBus, LucideArrowLeft, LucideCheck, LucideX, LucideClock, LucideLoaderCircle, LucideWallet, LucideCircleDollarSign, LucideActivity, LucideReceiptText, LucideRefreshCw, LucideAlertCircle } from '@lucide/angular';
 import { PayoutService } from '../../core/services/payout/payout.service';
 
 type Tab = 'companies' | 'requests' | 'history' | 'stats';
 
 @Component({
   selector: 'app-payout',
-  imports: [LucideBuilding2, LucideBus, LucideArrowLeft, LucideCheck, LucideX, LucideClock, LucideLoaderCircle, LucideWallet, LucideCircleDollarSign, LucideChevronLeft, LucideChevronRight, LucideActivity, LucideReceiptText, LucideRefreshCw, LucideAlertCircle],
+  imports: [LucideBuilding2, LucideBus, LucideArrowLeft, LucideCheck, LucideX, LucideClock, LucideLoaderCircle, LucideWallet, LucideCircleDollarSign, LucideActivity, LucideReceiptText, LucideRefreshCw, LucideAlertCircle],
   templateUrl: './payout.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

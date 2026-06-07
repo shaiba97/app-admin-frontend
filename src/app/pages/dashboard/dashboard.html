@@ -44,6 +44,7 @@
             { label: 'حجز اليوم', val: toArabic(d.bookings?.today ?? 0) },
             { label: 'إيرادات الشهر', val: fmtAmount(d.revenue?.revenueThisMonth ?? 0) + ' ج' },
             { label: 'معلق', val: toArabic(d.platform?.pendingPaymentsRequiringAction ?? 0) },
+          { label: 'مستحقات الشركات', val: fmtAmount(d.payout?.totalUnpaid ?? 0) + ' ج' },
           ]; track item.label) {
             <div class="flex flex-col gap-0.5 px-3 py-2 rounded-xl bg-white/10 whitespace-nowrap"><span class="text-white/60 text-[9px] font-medium">{{ item.label }}</span><span class="text-white font-extrabold text-xs tabular-nums">{{ item.val }}</span></div>
           }
@@ -58,7 +59,11 @@
           </div>
           <div class="flex-shrink-0 w-40 flex flex-col gap-2 p-3 bg-[var(--bg-card)] rounded-2xl border border-[var(--border)]" (click)="goTo('/users')">
             <div class="w-8 h-8 rounded-xl bg-[var(--primary-light)] flex items-center justify-center"><svg lucideUsers class="w-4 h-4 text-[var(--text-primary)]"></svg></div>
-            <div class="flex flex-col gap-0.5"><span class="text-[10px] font-medium text-[var(--text-muted)]">المستخدمون</span><span class="text-base font-extrabold text-[var(--text-primary)] tabular-nums">{{ toArabic(d.users?.total ?? 0) }}</span></div>
+            <div class="flex flex-col gap-0.5"><span class="text-[10px] font-medium text-[var(--text-muted)]">المستخدمين</span><span class="text-base font-extrabold text-[var(--text-primary)] tabular-nums">{{ toArabic(d.users?.total ?? 0) }}</span></div>
+          </div>
+          <div class="flex-shrink-0 w-40 flex flex-col gap-2 p-3 bg-[var(--bg-card)] rounded-2xl border border-[var(--border)]" (click)="goTo('/payout')">
+            <div class="w-8 h-8 rounded-xl bg-[var(--warning-light)] flex items-center justify-center"><svg lucideCircleDollarSign class="w-4 h-4 text-[var(--warning)]"></svg></div>
+            <div class="flex flex-col gap-0.5"><span class="text-[10px] font-medium text-[var(--text-muted)]">مستحقات الشركات</span><span class="text-base font-extrabold text-[var(--text-primary)] tabular-nums">{{ fmtAmount(d.payout?.totalUnpaid ?? 0) }} <span class="text-[9px] font-medium text-[var(--text-muted)]">ج</span></span></div>
           </div>
           <div class="flex-shrink-0 w-40 flex flex-col gap-2 p-3 bg-[var(--bg-card)] rounded-2xl border border-[var(--border)]" (click)="goTo('/financial')">
             <div class="w-8 h-8 rounded-xl bg-[var(--primary-light)] flex items-center justify-center"><svg lucideTicket class="w-4 h-4 text-[var(--text-primary)]"></svg></div>
@@ -247,6 +252,43 @@
               <div class="flex items-center justify-between"><span class="text-xs text-[var(--text-secondary)]">إجمالي الحافلات</span><span class="text-sm font-extrabold text-[var(--text-primary)] tabular-nums">{{ toArabic(d.operations?.totalBuses ?? 0) }}</span></div>
               <div class="flex items-center justify-between"><span class="text-xs text-[var(--text-secondary)]">إجمالي الرحلات</span><span class="text-sm font-extrabold text-[var(--text-primary)] tabular-nums">{{ toArabic(d.operations?.totalTrips ?? 0) }}</span></div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAYOUT ROW -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="flex flex-col gap-4 p-5 bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] cursor-pointer hover:border-[var(--primary)] transition-all group" (click)="goTo('/payout')">
+          <div class="flex items-center justify-between">
+            <div class="w-11 h-11 rounded-xl bg-[var(--warning-light)] flex items-center justify-center"><svg lucideCircleDollarSign class="w-5 h-5 text-[var(--warning)]"></svg></div>
+            <svg lucideArrowUpRight class="w-4 h-4 text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity"></svg>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="text-[11px] font-medium text-[var(--text-muted)] uppercase tracking-wider">مستحقات الشركات</span>
+            <span class="text-[26px] font-extrabold text-[var(--text-primary)] tabular-nums leading-none">{{ fmtAmount(d.payout?.totalUnpaid ?? 0) }} <span class="text-sm font-medium text-[var(--text-muted)]">ج</span></span>
+            <span class="text-[10px] text-[var(--text-secondary)]">بإنتظار الصرف</span>
+          </div>
+        </div>
+        <div class="flex flex-col gap-4 p-5 bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] cursor-pointer hover:border-[var(--primary)] transition-all group" (click)="goTo('/payout')">
+          <div class="flex items-center justify-between">
+            <div class="w-11 h-11 rounded-xl bg-[var(--success-light)] flex items-center justify-center"><svg lucideCheckCircle class="w-5 h-5 text-[var(--success)]"></svg></div>
+            <svg lucideArrowUpRight class="w-4 h-4 text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity"></svg>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="text-[11px] font-medium text-[var(--text-muted)] uppercase tracking-wider">المدفوع للشركات</span>
+            <span class="text-[26px] font-extrabold text-[var(--text-primary)] tabular-nums leading-none">{{ fmtAmount(d.payout?.totalPaid ?? 0) }} <span class="text-sm font-medium text-[var(--text-muted)]">ج</span></span>
+            <span class="text-[10px] text-[var(--text-secondary)]">إجمالي المبالغ المدفوعة</span>
+          </div>
+        </div>
+        <div class="flex flex-col gap-4 p-5 bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] cursor-pointer hover:border-[var(--primary)] transition-all group" (click)="goTo('/payout')">
+          <div class="flex items-center justify-between">
+            <div class="w-11 h-11 rounded-xl bg-[var(--info-light)] flex items-center justify-center"><svg lucideClock class="w-5 h-5 text-[var(--info)]"></svg></div>
+            <svg lucideArrowUpRight class="w-4 h-4 text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity"></svg>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="text-[11px] font-medium text-[var(--text-muted)] uppercase tracking-wider">طلبات الصرف</span>
+            <span class="text-[26px] font-extrabold text-[var(--text-primary)] tabular-nums leading-none">{{ toArabic(d.payout?.pendingRequests ?? 0) }}</span>
+            <span class="text-[10px] text-[var(--text-secondary)]">بانتظار المراجعة</span>
           </div>
         </div>
       </div>

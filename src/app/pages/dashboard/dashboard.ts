@@ -6,9 +6,10 @@ import {
   LucideCheckCircle, LucideBus, LucideAlertCircle, LucideArrowLeft,
   LucideArrowUpRight, LucideActivity,
   LucideBadgeDollarSign, LucideShield, LucideRefreshCw, LucideZap,
-  LucideUser, LucidePhone,
+  LucideUser, LucidePhone, LucideCircleDollarSign,
 } from '@lucide/angular';
 import { DashboardService } from '../../core/services/dashboard/dashboard.service';
+import { PayoutService } from '../../core/services/payout/payout.service';
 import { WsService } from '../../core/services/ws.service';
 
 @Component({
@@ -26,6 +27,7 @@ import { WsService } from '../../core/services/ws.service';
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private svc = inject(DashboardService);
+  private payoutSvc = inject(PayoutService);
   private router = inject(Router);
   private ws = inject(WsService);
   private wsCleanups: (() => void)[] = [];
@@ -59,6 +61,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.svc.getSummary().subscribe({
       next: (res: any) => { this.data.set(res?.data ?? res); this.isLoading.set(false); setTimeout(() => this.chartAnimated.set(true), 200); },
       error: (e: any) => { this.error.set(e?.error?.message ?? 'حدث خطأ أثناء تحميل البيانات'); this.isLoading.set(false); },
+    });
+    this.payoutSvc.getStats().subscribe({
+      next: (res: any) => {
+        const payoutStats = res?.data ?? res;
+        this.data.update((d: any) => d ? { ...d, payout: payoutStats } : d);
+      },
     });
   }
 
