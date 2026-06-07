@@ -1,6 +1,7 @@
-import { Component, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, signal, inject, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { LucideBuilding2, LucideBus, LucideArrowLeft, LucideCheck, LucideX, LucideClock, LucideLoaderCircle, LucideWallet, LucideCircleDollarSign, LucideActivity, LucideReceiptText, LucideRefreshCw, LucideAlertCircle } from '@lucide/angular';
 import { PayoutService } from '../../core/services/payout/payout.service';
+import { WsService } from '../../core/services/ws.service';
 
 type Tab = 'companies' | 'requests' | 'history' | 'stats';
 
@@ -10,8 +11,10 @@ type Tab = 'companies' | 'requests' | 'history' | 'stats';
   templateUrl: './payout.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PayoutComponent implements OnInit {
+export class PayoutComponent implements OnInit, OnDestroy {
   private svc = inject(PayoutService);
+  private ws = inject(WsService);
+  private wsCleanups: (() => void)[] = [];
 
   activeTab = signal<Tab>('companies');
   selectedCompany = signal<any | null>(null);
@@ -39,7 +42,12 @@ export class PayoutComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadTab('companies');
+    this.wsCleanups.push(this.ws.on('payout:requested', () => {
+      if (this.activeTab() === 'requests') this.loadRequests();
+    }));
   }
+
+  ngOnDestroy() { this.wsCleanups.forEach(fn => fn()); }
 
   switchTab(tab: Tab): void {
     this.activeTab.set(tab);
