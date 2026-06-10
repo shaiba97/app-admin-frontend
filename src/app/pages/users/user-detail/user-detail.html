@@ -64,7 +64,7 @@
                       <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full text-xs font-bold bg-[var(--primary-light)] text-[var(--text-primary)]">{{ methodLabel(b.Payment?.paymentMethod) }}</span></td>
                       <td class="px-4 py-3 text-[var(--text-muted)]">{{ b.createdAt | date:'yyyy-MM-dd' }}</td>
                       <td class="px-4 py-3">
-                        @if (b.TicketPDF?.ticketUrl) {
+                        @if (b.TicketPDF && b.status === 'CONFIRMED') {
                           <div class="flex items-center gap-1">
                             <button (click)="viewTicket(b.TicketPDF?.ticketUrl)" class="flex items-center gap-1 px-2 py-1 rounded-lg border border-[var(--border)] text-[var(--text-primary)] text-xs font-bold active:scale-95 transition-all hover:bg-[var(--bg-base)]"><svg lucideEye class="w-3 h-3"></svg> عرض</button>
                             <button (click)="downloadTicket(b.TicketPDF?.ticketUrl)" class="flex items-center gap-1 px-2 py-1 rounded-lg bg-[var(--primary)] text-white text-xs font-bold active:scale-95 transition-all"><svg lucideDownload class="w-3 h-3"></svg> تحميل</button>
