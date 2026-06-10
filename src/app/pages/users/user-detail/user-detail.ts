@@ -63,7 +63,17 @@ export class UserDetailComponent implements OnInit {
   goBack() { history.back(); }
 
   viewTicket(url: string | undefined): void { if (url) { this.ticketModalUrl.set(url); this.showTicketModal.set(true); } }
-  downloadTicket(url: string | undefined): void { if (url) window.open(url, '_blank'); }
+  downloadTicket(url: string | undefined): void {
+    if (!url) return;
+    if (url.startsWith('data:')) {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ticket.pdf';
+      a.click();
+    } else {
+      window.open(url, '_blank');
+    }
+  }
   closeTicketModal(): void { this.showTicketModal.set(false); this.ticketModalUrl.set(''); }
   safeUrl(url: string) { return this.sanitizer.bypassSecurityTrustResourceUrl(url); }
 
