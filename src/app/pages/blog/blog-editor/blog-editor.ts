@@ -3,12 +3,12 @@ import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { FormsModule } from '@angular/forms';
-import { LucideArrowRight, LucideSave, LucideLoaderCircle } from '@lucide/angular';
+import { LucideArrowRight, LucideSave, LucideLoaderCircle, LucideImage, LucideX, LucideUpload } from '@lucide/angular';
 import { RichTextEditorComponent } from '../../../shared/rich-text-editor/rich-text-editor';
 
 @Component({
   selector: 'app-blog-editor',
-  imports: [RouterLink, FormsModule, LucideArrowRight, LucideSave, LucideLoaderCircle, RichTextEditorComponent],
+  imports: [RouterLink, FormsModule, LucideArrowRight, LucideSave, LucideLoaderCircle, LucideImage, LucideX, LucideUpload, RichTextEditorComponent],
   template: `
     <div dir="rtl" class="p-4 md:p-6">
       <div class="max-w-4xl mx-auto">
@@ -43,6 +43,35 @@ import { RichTextEditorComponent } from '../../../shared/rich-text-editor/rich-t
                 <label class="block text-xs font-bold text-[var(--text-secondary)] mb-1.5">عنوان المقال</label>
                 <input [ngModel]="title()" (ngModelChange)="title.set($event)" type="text" placeholder="أدخل عنوان المقال..."
                   class="w-full px-4 py-3 rounded-xl bg-[var(--bg-base)] border border-[var(--border)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 transition-all">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-[var(--text-secondary)] mb-1.5">صورة الغلاف</label>
+                <div class="flex flex-col gap-3">
+                  @if (coverImage()) {
+                    <div class="relative rounded-xl overflow-hidden border border-[var(--border)]">
+                      <img [src]="coverImage()" class="w-full h-48 object-cover" alt="صورة الغلاف">
+                      <button type="button" (click)="removeCoverImage()"
+                        class="absolute top-2 left-2 w-8 h-8 flex items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 transition-all">
+                        <svg lucideX class="w-4 h-4"></svg>
+                      </button>
+                    </div>
+                  } @else {
+                    <div (click)="fileInput.click()"
+                      class="flex flex-col items-center justify-center gap-2 h-40 rounded-xl border-2 border-dashed border-[var(--border)] bg-[var(--bg-base)] cursor-pointer hover:border-[var(--primary)] hover:bg-[var(--primary)]/5 transition-all">
+                      <svg lucideImage class="w-10 h-10 text-[var(--text-muted)]"></svg>
+                      <span class="text-sm text-[var(--text-muted)]">انقر لاختيار صورة الغلاف</span>
+                      <span class="text-xs text-[var(--text-muted)]">JPEG, PNG, WebP, HEIC — حد أقصى 10MB</span>
+                    </div>
+                  }
+                  <input #fileInput type="file" accept="image/jpeg,image/jpg,image/png,image/webp,image/heic"
+                    (change)="uploadCoverImage($event)" class="hidden">
+                  @if (uploading()) {
+                    <div class="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
+                      <svg lucideUpload class="w-4 h-4 animate-bounce"></svg>
+                      <span>جاري رفع الصورة...</span>
+                    </div>
+                  }
+                </div>
               </div>
               <div>
                 <label class="block text-xs font-bold text-[var(--text-secondary)] mb-1.5">الرابط (Slug)</label>
@@ -90,6 +119,8 @@ export class BlogEditorComponent implements OnInit {
   content = signal('');
   published = signal(false);
   saving = signal(false);
+  coverImage = signal<string | null>(null);
+  uploading = signal(false);
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -102,6 +133,7 @@ export class BlogEditorComponent implements OnInit {
           this.excerpt.set(p.excerpt ?? '');
           this.content.set(p.content);
           this.published.set(p.published);
+          this.coverImage.set(p.coverImage ?? null);
         },
         error: () => this.router.navigate(['/blog']),
       });
@@ -111,7 +143,8 @@ export class BlogEditorComponent implements OnInit {
   save(): void {
     if (!this.title().trim() || !this.slug().trim() || !this.content().trim()) return;
     this.saving.set(true);
-    const body = { title: this.title(), slug: this.slug(), excerpt: this.excerpt(), content: this.content(), published: this.published() };
+    const body: any = { title: this.title(), slug: this.slug(), excerpt: this.excerpt(), content: this.content(), published: this.published() };
+    if (this.coverImage()) body.coverImage = this.coverImage();
     const id = this.route.snapshot.paramMap.get('id');
     const req = id
       ? this.http.put(`${this.api}/admin/blog/${id}`, body)
@@ -120,5 +153,28 @@ export class BlogEditorComponent implements OnInit {
       next: () => { this.saving.set(false); this.router.navigate(['/blog']); },
       error: () => { this.saving.set(false); alert('فشل الحفظ'); },
     });
+  }
+
+  uploadCoverImage(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    this.uploading.set(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    this.http.post<{ url: string }>(`${this.api}/admin/upload`, formData).subscribe({
+      next: res => {
+        this.coverImage.set(res.url);
+        this.uploading.set(false);
+      },
+      error: () => {
+        this.uploading.set(false);
+        alert('فشل رفع الصورة');
+      },
+    });
+  }
+
+  removeCoverImage(): void {
+    this.coverImage.set(null);
   }
 }

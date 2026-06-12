@@ -44,6 +44,9 @@ import { LucideArrowRight, LucideEye, LucideEyeOff, LucideLoaderCircle, LucidePe
                 }
               </div>
 
+              @if (post().coverImage) {
+                <img [src]="post().coverImage" alt="صورة الغلاف" class="w-full h-48 md:h-64 object-cover rounded-xl mb-4">
+              }
               <h1 class="text-2xl md:text-3xl font-extrabold text-[var(--text-primary)] mb-3">{{ post().title }}</h1>
 
               <div class="flex items-center gap-3 text-xs text-[var(--text-muted)] mb-6">
