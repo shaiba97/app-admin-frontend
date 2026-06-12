@@ -2,7 +2,7 @@ import { Component, signal, inject, OnInit, OnDestroy, ChangeDetectionStrategy }
 import { LucideBuilding2, LucideBus, LucideArrowLeft, LucideCheck, LucideX, LucideClock, LucideLoaderCircle, LucideWallet, LucideCircleDollarSign, LucideActivity, LucideReceiptText, LucideRefreshCw, LucideAlertCircle, LucideImage, LucideEye } from '@lucide/angular';
 import { PayoutService } from '../../core/services/payout/payout.service';
 import { WsService } from '../../core/services/ws.service';
-import { environment } from '../../../../environments/environment';
+import { environment } from '../../../environments/environment';
 
 type Tab = 'companies' | 'requests' | 'history' | 'stats';
 
