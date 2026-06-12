@@ -37,7 +37,12 @@ export class PayoutService {
     return this.http.get<any>(`${this.api}/admin/payout/requests`);
   }
 
-  approveRequest(id: string) {
+  approveRequest(id: string, receiptFile?: File) {
+    if (receiptFile) {
+      const fd = new FormData();
+      fd.append('receiptFile', receiptFile);
+      return this.http.post<any>(`${this.api}/admin/payout/requests/${id}/approve`, fd);
+    }
     return this.http.post<any>(`${this.api}/admin/payout/requests/${id}/approve`, {});
   }
 

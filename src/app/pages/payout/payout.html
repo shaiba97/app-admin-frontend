@@ -208,6 +208,10 @@
                       <td class="px-4 py-3">
                         @if (req.status === 'PENDING') {
                           <div class="flex items-center gap-1.5">
+                            <label class="flex items-center gap-1 px-2 py-1.5 rounded-lg border border-[var(--border)] text-[10px] font-semibold text-[var(--text-secondary)] hover:border-[var(--primary)] hover:text-[var(--primary)] transition-all cursor-pointer">
+                              <svg lucideImage class="w-3 h-3"></svg>
+                              <input type="file" accept="image/jpeg,image/jpg,image/png,image/webp,image/heic" (change)="onRequestReceiptSelected($event, req.id)" class="hidden">
+                            </label>
                             <button (click)="approveRequest(req.id)" [disabled]="approvingId() === req.id" class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[var(--success)] text-white text-[10px] font-bold hover:opacity-90 transition-all disabled:opacity-50">
                               @if (approvingId() === req.id) {
                                 <svg lucideLoaderCircle class="w-3 h-3 animate-spin"></svg>
@@ -264,6 +268,15 @@
                 }
                 @if (req.status === 'PENDING') {
                   <div class="flex items-center gap-2 pt-1 border-t border-[var(--border)]">
+                    <div class="flex items-center gap-1">
+                      <label class="flex items-center justify-center w-10 h-10 rounded-xl border border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--primary)] hover:text-[var(--primary)] transition-all cursor-pointer">
+                        <svg lucideImage class="w-4 h-4"></svg>
+                        <input type="file" accept="image/jpeg,image/jpg,image/png,image/webp,image/heic" (change)="onRequestReceiptSelected($event, req.id)" class="hidden">
+                      </label>
+                      @if (getRequestReceiptName(req.id)) {
+                        <span class="text-[10px] text-[var(--text-muted)] truncate max-w-[60px]">{{ getRequestReceiptName(req.id) }}</span>
+                      }
+                    </div>
                     <button (click)="approveRequest(req.id)" [disabled]="approvingId() === req.id" class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[var(--success)] text-white text-xs font-bold hover:opacity-90 transition-all disabled:opacity-50">
                       @if (approvingId() === req.id) {
                         <svg lucideLoaderCircle class="w-3.5 h-3.5 animate-spin"></svg>

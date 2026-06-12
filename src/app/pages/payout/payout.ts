@@ -34,6 +34,7 @@ export class PayoutComponent implements OnInit, OnDestroy {
   rejectingId = signal<string | null>(null);
   receiptFile = signal<File | null>(null);
   receiptFileName = signal<string>('');
+  requestReceiptFiles = signal<Map<string, File>>(new Map());
 
   tabs: { id: Tab; label: string; icon: string }[] = [
     { id: 'companies', label: 'الشركات', icon: 'building2' },
@@ -158,10 +159,32 @@ export class PayoutComponent implements OnInit, OnDestroy {
 
   approveRequest(id: string): void {
     this.approvingId.set(id);
-    this.svc.approveRequest(id).subscribe({
-      next: () => { this.approvingId.set(null); this.showSuccess('تم قبول الطلب بنجاح'); this.loadRequests(); },
+    const file = this.requestReceiptFiles().get(id);
+    this.svc.approveRequest(id, file).subscribe({
+      next: () => {
+        this.approvingId.set(null);
+        const map = this.requestReceiptFiles();
+        map.delete(id);
+        this.requestReceiptFiles.set(map);
+        this.showSuccess('تم قبول الطلب بنجاح');
+        this.loadRequests();
+      },
       error: (e: any) => { this.approvingId.set(null); this.showError(e?.error?.message ?? 'فشل قبول الطلب'); },
     });
+  }
+
+  onRequestReceiptSelected(event: Event, requestId: string): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file) {
+      const map = this.requestReceiptFiles();
+      map.set(requestId, file);
+      this.requestReceiptFiles.set(map);
+    }
+  }
+
+  getRequestReceiptName(requestId: string): string {
+    return this.requestReceiptFiles().get(requestId)?.name ?? '';
   }
 
   rejectRequest(id: string): void {
