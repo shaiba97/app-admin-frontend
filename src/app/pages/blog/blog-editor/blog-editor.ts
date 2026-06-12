@@ -143,8 +143,7 @@ export class BlogEditorComponent implements OnInit {
   save(): void {
     if (!this.title().trim() || !this.slug().trim() || !this.content().trim()) return;
     this.saving.set(true);
-    const body: any = { title: this.title(), slug: this.slug(), excerpt: this.excerpt(), content: this.content(), published: this.published() };
-    if (this.coverImage()) body.coverImage = this.coverImage();
+    const body: any = { title: this.title(), slug: this.slug(), excerpt: this.excerpt(), content: this.content(), published: this.published(), coverImage: this.coverImage() ?? null };
     const id = this.route.snapshot.paramMap.get('id');
     const req = id
       ? this.http.put(`${this.api}/admin/blog/${id}`, body)
