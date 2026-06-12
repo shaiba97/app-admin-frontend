@@ -1,5 +1,5 @@
 import { Component, signal, inject, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
-import { LucideBuilding2, LucideBus, LucideArrowLeft, LucideCheck, LucideX, LucideClock, LucideLoaderCircle, LucideWallet, LucideCircleDollarSign, LucideActivity, LucideReceiptText, LucideRefreshCw, LucideAlertCircle, LucideImage } from '@lucide/angular';
+import { LucideBuilding2, LucideBus, LucideArrowLeft, LucideCheck, LucideX, LucideClock, LucideLoaderCircle, LucideWallet, LucideCircleDollarSign, LucideActivity, LucideReceiptText, LucideRefreshCw, LucideAlertCircle, LucideImage, LucideEye } from '@lucide/angular';
 import { PayoutService } from '../../core/services/payout/payout.service';
 import { WsService } from '../../core/services/ws.service';
 
@@ -7,7 +7,7 @@ type Tab = 'companies' | 'requests' | 'history' | 'stats';
 
 @Component({
   selector: 'app-payout',
-  imports: [LucideBuilding2, LucideBus, LucideArrowLeft, LucideCheck, LucideX, LucideClock, LucideLoaderCircle, LucideWallet, LucideCircleDollarSign, LucideActivity, LucideReceiptText, LucideRefreshCw, LucideAlertCircle, LucideImage],
+  imports: [LucideBuilding2, LucideBus, LucideArrowLeft, LucideCheck, LucideX, LucideClock, LucideLoaderCircle, LucideWallet, LucideCircleDollarSign, LucideActivity, LucideReceiptText, LucideRefreshCw, LucideAlertCircle, LucideImage, LucideEye],
   templateUrl: './payout.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -35,6 +35,7 @@ export class PayoutComponent implements OnInit, OnDestroy {
   receiptFile = signal<File | null>(null);
   receiptFileName = signal<string>('');
   requestReceiptFiles = signal<Map<string, File>>(new Map());
+  viewingReceipt = signal<string | null>(null);
 
   tabs: { id: Tab; label: string; icon: string }[] = [
     { id: 'companies', label: 'الشركات', icon: 'building2' },
@@ -155,6 +156,14 @@ export class PayoutComponent implements OnInit, OnDestroy {
         error: () => {},
       });
     }
+  }
+
+  viewReceipt(url: string): void {
+    this.viewingReceipt.set(url);
+  }
+
+  closeReceipt(): void {
+    this.viewingReceipt.set(null);
   }
 
   approveRequest(id: string): void {
