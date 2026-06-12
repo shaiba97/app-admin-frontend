@@ -506,7 +506,14 @@
         <button (click)="closeReceipt()" class="absolute top-3 left-3 w-8 h-8 flex items-center justify-center rounded-full bg-black/50 text-white z-10 hover:bg-black/70 transition-all">
           <svg lucideX class="w-4 h-4"></svg>
         </button>
-        <img [src]="viewingReceipt()" class="w-full h-auto rounded-xl" alt="إيصال الدفع">
+        @if (receiptError()) {
+          <div class="flex flex-col items-center justify-center py-16 gap-3 text-[var(--text-muted)]">
+            <svg lucideAlertCircle class="w-12 h-12 opacity-30"></svg>
+            <p class="text-sm">فشل تحميل الإيصال</p>
+          </div>
+        } @else {
+          <img [src]="viewingReceipt()" (error)="receiptError.set(true)" class="w-full h-auto rounded-xl" alt="إيصال الدفع">
+        }
       </div>
     </div>
   }

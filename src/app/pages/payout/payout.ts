@@ -37,6 +37,7 @@ export class PayoutComponent implements OnInit, OnDestroy {
   receiptFileName = signal<string>('');
   requestReceiptFiles = signal<Map<string, File>>(new Map());
   viewingReceipt = signal<string | null>(null);
+  receiptError = signal(false);
 
   tabs: { id: Tab; label: string; icon: string }[] = [
     { id: 'companies', label: 'الشركات', icon: 'building2' },
@@ -159,14 +160,18 @@ export class PayoutComponent implements OnInit, OnDestroy {
     }
   }
 
+  getFileUrl(path: string): string {
+    return path.startsWith('http') ? path : `${environment.apiUrl.admin.replace('/api', '')}${path}`;
+  }
+
   viewReceipt(url: string): void {
-    this.viewingReceipt.set(
-      url.startsWith('http') ? url : `${environment.apiUrl.admin.replace('/api', '')}${url}`
-    );
+    this.receiptError.set(false);
+    this.viewingReceipt.set(this.getFileUrl(url));
   }
 
   closeReceipt(): void {
     this.viewingReceipt.set(null);
+    this.receiptError.set(false);
   }
 
   approveRequest(id: string): void {
@@ -179,9 +184,7 @@ export class PayoutComponent implements OnInit, OnDestroy {
     this.svc.approveRequest(id, file).subscribe({
       next: () => {
         this.approvingId.set(null);
-        const map = this.requestReceiptFiles();
-        map.delete(id);
-        this.requestReceiptFiles.set(map);
+        this.requestReceiptFiles.update(m => { const n = new Map(m); n.delete(id); return n; });
         this.showSuccess('تم قبول الطلب بنجاح');
         this.loadRequests();
       },
@@ -193,9 +196,7 @@ export class PayoutComponent implements OnInit, OnDestroy {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (file) {
-      const map = this.requestReceiptFiles();
-      map.set(requestId, file);
-      this.requestReceiptFiles.set(map);
+      this.requestReceiptFiles.update(m => new Map(m).set(requestId, file));
     }
   }
 
