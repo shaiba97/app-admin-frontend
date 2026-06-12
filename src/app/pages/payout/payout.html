@@ -214,6 +214,7 @@
                     <th class="text-right px-4 py-3 text-xs font-bold text-[var(--text-secondary)] whitespace-nowrap">الشركة</th>
                     <th class="text-right px-4 py-3 text-xs font-bold text-[var(--text-secondary)] whitespace-nowrap">المبلغ</th>
                     <th class="text-right px-4 py-3 text-xs font-bold text-[var(--text-secondary)] whitespace-nowrap">الرحلة</th>
+                    <th class="text-right px-4 py-3 text-xs font-bold text-[var(--text-secondary)] whitespace-nowrap">الحساب البنكي</th>
                     <th class="text-right px-4 py-3 text-xs font-bold text-[var(--text-secondary)] whitespace-nowrap">الحالة</th>
                     <th class="text-right px-4 py-3 text-xs font-bold text-[var(--text-secondary)] whitespace-nowrap">التاريخ</th>
                     <th class="text-right px-4 py-3 text-xs font-bold text-[var(--text-secondary)] whitespace-nowrap">ملاحظة</th>
@@ -226,6 +227,16 @@
                       <td class="px-4 py-3 text-xs font-semibold text-[var(--text-primary)]">{{ req.company?.name ?? '—' }}</td>
                       <td class="px-4 py-3 text-xs font-bold tabular-nums text-[var(--text-primary)]">{{ formatAmount(req.amount) }} <span class="text-[10px] font-normal text-[var(--text-muted)]">ج</span></td>
                       <td class="px-4 py-3 text-xs text-[var(--text-secondary)]">{{ req.trip ? (req.trip.fromCity + ' ← ' + req.trip.toCity) : 'جميع الرحلات' }}</td>
+                      <td class="px-4 py-3 text-xs text-[var(--text-secondary)]">
+                        @if (req.company?.accountHolderName) {
+                          <div class="flex flex-col gap-0.5">
+                            <span class="font-semibold">{{ req.company.accountHolderName }}</span>
+                            <span class="text-[10px] opacity-70">{{ req.company.bankName }} — {{ req.company.accountNumber }}</span>
+                          </div>
+                        } @else {
+                          <span class="text-[10px] text-[var(--text-muted)]">—</span>
+                        }
+                      </td>
                       <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold" [class]="statusClasses(req.status).join(' ')">{{ statusLabel(req.status) }}</span></td>
                       <td class="px-4 py-3 text-[10px] text-[var(--text-muted)] whitespace-nowrap">{{ fmtDateTime(req.createdAt) }}</td>
                       <td class="px-4 py-3 text-xs text-[var(--text-secondary)] max-w-[150px] truncate">{{ req.note || '—' }}</td>
@@ -236,7 +247,7 @@
                               <svg lucideImage class="w-3 h-3"></svg>
                               <input type="file" accept="image/jpeg,image/jpg,image/png,image/webp,image/heic" (change)="onRequestReceiptSelected($event, req.id)" class="hidden">
                             </label>
-                            <button (click)="approveRequest(req.id)" [disabled]="approvingId() === req.id" class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[var(--success)] text-white text-[10px] font-bold hover:opacity-90 transition-all disabled:opacity-50">
+                            <button (click)="approveRequest(req.id)" [disabled]="approvingId() === req.id || !getRequestReceiptName(req.id)" class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[var(--success)] text-white text-[10px] font-bold hover:opacity-90 transition-all disabled:opacity-50">
                               @if (approvingId() === req.id) {
                                 <svg lucideLoaderCircle class="w-3 h-3 animate-spin"></svg>
                               } @else {
@@ -281,6 +292,16 @@
                   <span class="text-xs text-[var(--text-secondary)]">{{ req.trip ? (req.trip.fromCity + ' ← ' + req.trip.toCity) : 'جميع الرحلات' }}</span>
                 </div>
                 <div class="flex items-center justify-between">
+                  <span class="text-xs text-[var(--text-muted)]">الحساب البنكي</span>
+                  <span class="text-xs text-[var(--text-secondary)]">
+                    @if (req.company?.accountHolderName) {
+                      {{ req.company.accountHolderName }} — {{ req.company.bankName }} — {{ req.company.accountNumber }}
+                    } @else {
+                      —
+                    }
+                  </span>
+                </div>
+                <div class="flex items-center justify-between">
                   <span class="text-xs text-[var(--text-muted)]">التاريخ</span>
                   <span class="text-xs text-[var(--text-secondary)]">{{ fmtDateTime(req.createdAt) }}</span>
                 </div>
@@ -301,7 +322,7 @@
                         <span class="text-[10px] text-[var(--text-muted)] truncate max-w-[60px]">{{ getRequestReceiptName(req.id) }}</span>
                       }
                     </div>
-                    <button (click)="approveRequest(req.id)" [disabled]="approvingId() === req.id" class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[var(--success)] text-white text-xs font-bold hover:opacity-90 transition-all disabled:opacity-50">
+                    <button (click)="approveRequest(req.id)" [disabled]="approvingId() === req.id || !getRequestReceiptName(req.id)" class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[var(--success)] text-white text-xs font-bold hover:opacity-90 transition-all disabled:opacity-50">
                       @if (approvingId() === req.id) {
                         <svg lucideLoaderCircle class="w-3.5 h-3.5 animate-spin"></svg>
                       } @else {

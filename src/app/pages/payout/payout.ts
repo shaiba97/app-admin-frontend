@@ -170,8 +170,12 @@ export class PayoutComponent implements OnInit, OnDestroy {
   }
 
   approveRequest(id: string): void {
-    this.approvingId.set(id);
     const file = this.requestReceiptFiles().get(id);
+    if (!file) {
+      this.showError('يجب رفع إيصال الدفع قبل القبول');
+      return;
+    }
+    this.approvingId.set(id);
     this.svc.approveRequest(id, file).subscribe({
       next: () => {
         this.approvingId.set(null);
