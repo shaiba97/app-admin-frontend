@@ -2,6 +2,7 @@ import { Component, signal, inject, OnInit, OnDestroy, ChangeDetectionStrategy }
 import { LucideBuilding2, LucideBus, LucideArrowLeft, LucideCheck, LucideX, LucideClock, LucideLoaderCircle, LucideWallet, LucideCircleDollarSign, LucideActivity, LucideReceiptText, LucideRefreshCw, LucideAlertCircle, LucideImage, LucideEye } from '@lucide/angular';
 import { PayoutService } from '../../core/services/payout/payout.service';
 import { WsService } from '../../core/services/ws.service';
+import { environment } from '../../../../environments/environment';
 
 type Tab = 'companies' | 'requests' | 'history' | 'stats';
 
@@ -159,7 +160,9 @@ export class PayoutComponent implements OnInit, OnDestroy {
   }
 
   viewReceipt(url: string): void {
-    this.viewingReceipt.set(url);
+    this.viewingReceipt.set(
+      url.startsWith('http') ? url : `${environment.apiUrl.admin.replace('/api', '')}${url}`
+    );
   }
 
   closeReceipt(): void {

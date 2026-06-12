@@ -49,7 +49,7 @@ import { RichTextEditorComponent } from '../../../shared/rich-text-editor/rich-t
                 <div class="flex flex-col gap-3">
                   @if (coverImage()) {
                     <div class="relative rounded-xl overflow-hidden border border-[var(--border)]">
-                      <img [src]="coverImage()" class="w-full h-48 object-cover" alt="صورة الغلاف">
+                      <img [src]="getFileUrl(coverImage()!)" class="w-full h-48 object-cover" alt="صورة الغلاف">
                       <button type="button" (click)="removeCoverImage()"
                         class="absolute top-2 left-2 w-8 h-8 flex items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 transition-all">
                         <svg lucideX class="w-4 h-4"></svg>
@@ -176,5 +176,10 @@ export class BlogEditorComponent implements OnInit {
 
   removeCoverImage(): void {
     this.coverImage.set(null);
+  }
+
+  getFileUrl(path: string): string {
+    if (!path || path.startsWith('http')) return path;
+    return `${environment.apiUrl.admin.replace('/api', '')}${path}`;
   }
 }

@@ -45,7 +45,7 @@ import { LucideArrowRight, LucideEye, LucideEyeOff, LucideLoaderCircle, LucidePe
               </div>
 
               @if (post().coverImage) {
-                <img [src]="post().coverImage" alt="صورة الغلاف" class="w-full h-48 md:h-64 object-cover rounded-xl mb-4">
+                <img [src]="getFileUrl(post().coverImage)" alt="صورة الغلاف" class="w-full h-48 md:h-64 object-cover rounded-xl mb-4">
               }
               <h1 class="text-2xl md:text-3xl font-extrabold text-[var(--text-primary)] mb-3">{{ post().title }}</h1>
 
@@ -95,6 +95,11 @@ export class BlogDetailComponent implements OnInit {
       return;
     }
     this.load();
+  }
+
+  getFileUrl(path: string): string {
+    if (!path || path.startsWith('http')) return path;
+    return `${environment.apiUrl.admin.replace('/api', '')}${path}`;
   }
 
   load(): void {
