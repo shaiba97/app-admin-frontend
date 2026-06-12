@@ -1,5 +1,5 @@
 import { Component, signal, inject, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
-import { LucideBuilding2, LucideBus, LucideArrowLeft, LucideCheck, LucideX, LucideClock, LucideLoaderCircle, LucideWallet, LucideCircleDollarSign, LucideActivity, LucideReceiptText, LucideRefreshCw, LucideAlertCircle } from '@lucide/angular';
+import { LucideBuilding2, LucideBus, LucideArrowLeft, LucideCheck, LucideX, LucideClock, LucideLoaderCircle, LucideWallet, LucideCircleDollarSign, LucideActivity, LucideReceiptText, LucideRefreshCw, LucideAlertCircle, LucideImage } from '@lucide/angular';
 import { PayoutService } from '../../core/services/payout/payout.service';
 import { WsService } from '../../core/services/ws.service';
 
@@ -7,7 +7,7 @@ type Tab = 'companies' | 'requests' | 'history' | 'stats';
 
 @Component({
   selector: 'app-payout',
-  imports: [LucideBuilding2, LucideBus, LucideArrowLeft, LucideCheck, LucideX, LucideClock, LucideLoaderCircle, LucideWallet, LucideCircleDollarSign, LucideActivity, LucideReceiptText, LucideRefreshCw, LucideAlertCircle],
+  imports: [LucideBuilding2, LucideBus, LucideArrowLeft, LucideCheck, LucideX, LucideClock, LucideLoaderCircle, LucideWallet, LucideCircleDollarSign, LucideActivity, LucideReceiptText, LucideRefreshCw, LucideAlertCircle, LucideImage],
   templateUrl: './payout.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -32,6 +32,8 @@ export class PayoutComponent implements OnInit, OnDestroy {
   payingAll = signal(false);
   approvingId = signal<string | null>(null);
   rejectingId = signal<string | null>(null);
+  receiptFile = signal<File | null>(null);
+  receiptFileName = signal<string>('');
 
   tabs: { id: Tab; label: string; icon: string }[] = [
     { id: 'companies', label: 'الشركات', icon: 'building2' },
@@ -114,8 +116,8 @@ export class PayoutComponent implements OnInit, OnDestroy {
 
   payTrip(tripId: string): void {
     this.payingTripId.set(tripId);
-    this.svc.payTrip(tripId).subscribe({
-      next: () => { this.payingTripId.set(null); this.showSuccess('تم صرف الرحلة بنجاح ✓'); this.refreshCompanyDetail(); this.loadCompanies(); },
+    this.svc.payTrip(tripId, this.receiptFile() ?? undefined).subscribe({
+      next: () => { this.payingTripId.set(null); this.receiptFile.set(null); this.receiptFileName.set(''); this.showSuccess('تم صرف الرحلة بنجاح ✓'); this.refreshCompanyDetail(); this.loadCompanies(); },
       error: (e: any) => { this.payingTripId.set(null); this.showError(e?.error?.message ?? 'فشل صرف الرحلة'); },
     });
   }
@@ -124,10 +126,24 @@ export class PayoutComponent implements OnInit, OnDestroy {
     const company = this.selectedCompany();
     if (!company) return;
     this.payingAll.set(true);
-    this.svc.payAll(company.id).subscribe({
-      next: () => { this.payingAll.set(false); this.showSuccess('تم صرف جميع المستحقات بنجاح ✓'); this.refreshCompanyDetail(); this.loadCompanies(); },
+    this.svc.payAll(company.id, this.receiptFile() ?? undefined).subscribe({
+      next: () => { this.payingAll.set(false); this.receiptFile.set(null); this.receiptFileName.set(''); this.showSuccess('تم صرف جميع المستحقات بنجاح ✓'); this.refreshCompanyDetail(); this.loadCompanies(); },
       error: (e: any) => { this.payingAll.set(false); this.showError(e?.error?.message ?? 'فشل صرف المستحقات'); },
     });
+  }
+
+  onReceiptSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file) {
+      this.receiptFile.set(file);
+      this.receiptFileName.set(file.name);
+    }
+  }
+
+  clearReceipt(): void {
+    this.receiptFile.set(null);
+    this.receiptFileName.set('');
   }
 
   private refreshCompanyDetail(): void {

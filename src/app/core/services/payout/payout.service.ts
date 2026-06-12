@@ -15,11 +15,21 @@ export class PayoutService {
     return this.http.get<any>(`${this.api}/admin/payout/company/${companyId}/trips`);
   }
 
-  payTrip(tripId: string) {
+  payTrip(tripId: string, receiptFile?: File) {
+    if (receiptFile) {
+      const fd = new FormData();
+      fd.append('receiptFile', receiptFile);
+      return this.http.post<any>(`${this.api}/admin/payout/pay-trip/${tripId}`, fd);
+    }
     return this.http.post<any>(`${this.api}/admin/payout/pay-trip/${tripId}`, {});
   }
 
-  payAll(companyId: string) {
+  payAll(companyId: string, receiptFile?: File) {
+    if (receiptFile) {
+      const fd = new FormData();
+      fd.append('receiptFile', receiptFile);
+      return this.http.post<any>(`${this.api}/admin/payout/pay-all/${companyId}`, fd);
+    }
     return this.http.post<any>(`${this.api}/admin/payout/pay-all/${companyId}`, {});
   }
 
