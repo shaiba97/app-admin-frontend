@@ -13,8 +13,15 @@ export const routes: Routes = [
       { path: 'users/:id', loadComponent: () => import('./pages/users/user-detail/user-detail').then(m => m.UserDetailComponent) },
       { path: 'companies', loadComponent: () => import('./pages/companies/companies').then(m => m.CompaniesComponent) },
       { path: 'companies/:id', loadComponent: () => import('./pages/companies/company-detail/company-detail').then(m => m.CompanyDetailComponent) },
-      { path: 'financial', loadComponent: () => import('./pages/financial/financial').then(m => m.FinancialComponent) },
-      { path: 'payout', loadComponent: () => import('./pages/payout/payout').then(m => m.PayoutComponent) },
+      {
+        path: 'financial',
+        children: [
+          { path: '', loadComponent: () => import('./pages/financial/financial').then(m => m.FinancialComponent) },
+          { path: 'payout', loadComponent: () => import('./pages/payout/payout').then(m => m.PayoutComponent) },
+        ],
+      },
+      { path: 'payout', redirectTo: 'financial/payout', pathMatch: 'full' },
+      { path: 'notifications', loadComponent: () => import('./pages/notifications/notifications').then(m => m.NotificationsComponent) },
       { path: 'platform-fee', loadComponent: () => import('./pages/platform-fee/platform-fee').then(m => m.PlatformFeeComponent) },
       { path: 'payment-accounts', loadComponent: () => import('./pages/payment-accounts/payment-accounts').then(m => m.PaymentAccountsComponent) },
       { path: 'support-contacts', loadComponent: () => import('./pages/support-contacts/support-contacts').then(m => m.SupportContactsComponent) },

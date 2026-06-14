@@ -18,10 +18,10 @@
               @case ('layout-dashboard') { <svg lucideLayoutDashboard class="w-5 h-5 flex-shrink-0"></svg> }
               @case ('users') { <svg lucideUsers class="w-5 h-5 flex-shrink-0"></svg> }
               @case ('wallet') { <svg lucideWallet class="w-5 h-5 flex-shrink-0"></svg> }
-              @case ('user') { <svg lucideUser class="w-5 h-5 flex-shrink-0"></svg> }
               @case ('phone') { <svg lucidePhone class="w-5 h-5 flex-shrink-0"></svg> }
               @case ('newspaper') { <svg lucideNewspaper class="w-5 h-5 flex-shrink-0"></svg> }
-              @case ('circle-dollar-sign') { <svg lucideCircleDollarSign class="w-5 h-5 flex-shrink-0"></svg> }
+              @case ('bell') { <svg lucideBell class="w-5 h-5 flex-shrink-0"></svg> }
+              @case ('user') { <svg lucideUser class="w-5 h-5 flex-shrink-0"></svg> }
             }
             @if (sidebarOpen()) { <span class="text-sm font-semibold whitespace-nowrap">{{ item.label }}</span> }
             @if (rla.isActive) { <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full bg-white"></div> }
@@ -40,48 +40,6 @@
     <!-- MAIN AREA -->
     <div class="flex-1 flex flex-col overflow-hidden min-w-0">
 
-      <!-- DESKTOP TOPBAR (hidden on mobile) -->
-      <header class="max-md:hidden flex-shrink-0 bg-[var(--bg-card)] border-b border-[var(--border)] px-5 h-16 flex items-center justify-between gap-4 shadow-[var(--shadow-sm)] z-30">
-        <button (click)="toggleSidebar()" class="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-[var(--bg-base)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all duration-150">
-          @if (sidebarOpen()) { <svg lucideX class="w-5 h-5"></svg> } @else { <svg lucideMenu class="w-5 h-5"></svg> }
-        </button>
-        <div class="flex items-center gap-2">
-          <button (click)="toggleDark()" class="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-[var(--bg-base)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all duration-150">
-            @if (isDark()) { <svg lucideSun class="w-4 h-4 text-amber-500"></svg> } @else { <svg lucideMoon class="w-4 h-4"></svg> }
-          </button>
-          @if (auth.isLoggedIn()) {
-          <app-notification-bell></app-notification-bell>
-          <div class="w-px h-6 bg-[var(--border)] mx-1"></div>
-            <div class="relative">
-              <button (click)="showUserMenu.update(v => !v)" class="flex items-center gap-2 px-2 py-1.5 rounded-xl hover:bg-[var(--bg-base)] transition-all duration-150">
-                <div class="w-8 h-8 rounded-full bg-[var(--primary)] flex items-center justify-center"><svg lucideUser class="w-4 h-4 text-white"></svg></div>
-                <span class="text-xs font-bold text-[var(--text-primary)] hidden md:block">{{ auth.currentUser()?.name ?? 'أدمن' }}</span>
-                <svg lucideChevronDown class="w-3.5 h-3.5 text-[var(--text-muted)] hidden md:block"></svg>
-              </button>
-              @if (showUserMenu()) {
-                <div class="absolute left-0 top-12 w-48 bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl shadow-lg overflow-hidden z-50">
-                  <a routerLink="/profile" (click)="showUserMenu.set(false)" class="flex items-center gap-2 px-4 py-3 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-base)] transition-colors"><svg lucideUser class="w-4 h-4"></svg>الملف الشخصي</a>
-                  <div class="h-px bg-[var(--border)]"></div>
-                  <button (click)="logout()" class="flex items-center gap-2 px-4 py-3 text-sm text-red-500 w-full hover:bg-red-50 transition-colors"><svg lucideLogOut class="w-4 h-4"></svg>تسجيل الخروج</button>
-                </div>
-              }
-            </div>
-          }
-        </div>
-      </header>
-
-      <!-- MOBILE TOPBAR (hidden on desktop) -->
-      <header class="max-md:flex md:hidden flex-shrink-0 bg-[var(--bg-card)] border-b border-[var(--border)] px-4 h-14 flex items-center justify-between z-30 shadow-[var(--shadow-sm)]">
-        <span class="text-base font-bold text-[var(--text-primary)]">رحلة</span>
-        <div class="flex items-center gap-1">
-          <app-notification-bell></app-notification-bell>
-          <button (click)="toggleDark()" class="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-[var(--bg-base)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all duration-150">
-          @if (isDark()) { <svg lucideSun class="w-4 h-4 text-amber-500"></svg> } @else { <svg lucideMoon class="w-4 h-4"></svg> }
-        </button>
-        </div>
-      </header>
-
-      <!-- SINGLE ROUTER-OUTLET for both views -->
       <main class="flex-1 overflow-y-auto max-md:pb-16">
         <router-outlet></router-outlet>
       </main>
@@ -95,7 +53,7 @@
       <a [routerLink]="item.path"
          routerLinkActive="text-[var(--primary)]"
          #rla="routerLinkActive"
-         class="flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-xl transition-all duration-150 min-w-0 active:scale-95"
+         class="flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-xl transition-all duration-150 min-w-0 active:scale-95 relative"
          [class.text-[var(--text-muted)]]="!rla.isActive"
          [class.text-[var(--primary)]]="rla.isActive">
         @switch (item.icon) {
@@ -103,9 +61,14 @@
           @case ('users') { <svg lucideUsers class="w-5 h-5"></svg> }
           @case ('wallet') { <svg lucideWallet class="w-5 h-5"></svg> }
           @case ('phone') { <svg lucidePhone class="w-5 h-5"></svg> }
-          @case ('user') { <svg lucideUser class="w-5 h-5"></svg> }
           @case ('newspaper') { <svg lucideNewspaper class="w-5 h-5"></svg> }
-          @case ('circle-dollar-sign') { <svg lucideCircleDollarSign class="w-5 h-5"></svg> }
+          @case ('bell') { <svg lucideBell class="w-5 h-5"></svg> }
+          @case ('user') { <svg lucideUser class="w-5 h-5"></svg> }
+        }
+        @if (item.icon === 'bell' && notifSvc.unreadCount() > 0) {
+          <span class="absolute -top-0.5 -right-0.5 min-w-[14px] h-3.5 px-1 bg-red-500 text-white text-[8px] font-bold rounded-full flex items-center justify-center">
+            {{ notifSvc.unreadCount() > 99 ? '+99' : toArabicNum(notifSvc.unreadCount()) }}
+          </span>
         }
         <span class="text-[9px] font-semibold whitespace-nowrap">{{ item.label }}</span>
       </a>

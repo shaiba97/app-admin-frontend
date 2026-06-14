@@ -1,6 +1,7 @@
 import { Component, signal, inject, OnInit, computed, OnDestroy } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { LucideWallet, LucideTrendingUp, LucideClock, LucidePlus, LucidePencil, LucideTrash2, LucideCheck, LucideX, LucideLoaderCircle, LucideRefreshCw, LucideEye, LucideCreditCard, LucideBadgeDollarSign, LucideToggleLeft, LucideToggleRight, LucideReceiptText, LucideShield, LucideActivity, LucideBarChart3 } from '@lucide/angular';
+import { LucideWallet, LucideTrendingUp, LucideClock, LucidePlus, LucidePencil, LucideTrash2, LucideCheck, LucideX, LucideLoaderCircle, LucideRefreshCw, LucideEye, LucideCreditCard, LucideBadgeDollarSign, LucideToggleLeft, LucideToggleRight, LucideReceiptText, LucideShield, LucideActivity, LucideBarChart3, LucideCircleDollarSign } from '@lucide/angular';
 import { FinancialService } from '../../core/services/financial/financial.service';
 import { PlatformFeeService } from '../../core/services/platform-fee/platform-fee.service';
 import { PaymentAccountsService } from '../../core/services/payment-accounts/payment-accounts.service';
@@ -11,7 +12,7 @@ type Tab = 'overview' | 'pending' | 'platform-fee' | 'expenses' | 'accounts' | '
 
 @Component({
   selector: 'app-financial',
-  imports: [FormsModule, LucideWallet, LucideTrendingUp, LucideClock, LucidePlus, LucidePencil, LucideTrash2, LucideCheck, LucideX, LucideLoaderCircle, LucideRefreshCw, LucideEye, LucideCreditCard, LucideBadgeDollarSign, LucideToggleLeft, LucideToggleRight, LucideReceiptText, LucideShield, LucideActivity, LucideBarChart3],
+  imports: [RouterLink, RouterLinkActive, FormsModule, LucideWallet, LucideTrendingUp, LucideClock, LucidePlus, LucidePencil, LucideTrash2, LucideCheck, LucideX, LucideLoaderCircle, LucideRefreshCw, LucideEye, LucideCreditCard, LucideBadgeDollarSign, LucideToggleLeft, LucideToggleRight, LucideReceiptText, LucideShield, LucideActivity, LucideBarChart3, LucideCircleDollarSign],
   templateUrl: './financial.html',
 })
 export class FinancialComponent implements OnInit, OnDestroy {
