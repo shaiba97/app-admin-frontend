@@ -132,9 +132,15 @@ export class UsersComponent implements OnInit {
       this.formError.set('الاسم مطلوب');
       return;
     }
-    if (!this.editMode() && !this.formPassword().trim()) {
-      this.formError.set('كلمة المرور مطلوبة');
-      return;
+    if (!this.editMode()) {
+      if (!this.formPassword().trim()) {
+        this.formError.set('كلمة المرور مطلوبة');
+        return;
+      }
+      if (!this.formEmail().trim() && !this.formPhone().trim()) {
+        this.formError.set('البريد الإلكتروني أو الهاتف مطلوب');
+        return;
+      }
     }
 
     this.saving.set(true);
