@@ -2,13 +2,15 @@ import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgClass, DatePipe } from '@angular/common';
 import { DomSanitizer } from '@angular/platform-browser';
-import { LucideUser, LucideArrowRight, LucideBus, LucideMapPin, LucideLoaderCircle, LucideEye, LucideDownload, LucideX } from '@lucide/angular';
+import { LucideUser, LucideArrowRight, LucideBus, LucideMapPin, LucideLoaderCircle, LucideEye, LucideDownload, LucideX, LucideUsers } from '@lucide/angular';
 import { AdminUsersService } from '../../../core/services/admin-users/admin-users.service';
+import { AuthService } from '../../../core/services/auth/auth.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-user-detail',
   standalone: true,
-  imports: [NgClass, DatePipe, LucideUser, LucideArrowRight, LucideBus, LucideMapPin, LucideLoaderCircle, LucideEye, LucideDownload, LucideX],
+  imports: [NgClass, DatePipe, LucideUser, LucideArrowRight, LucideBus, LucideMapPin, LucideLoaderCircle, LucideEye, LucideDownload, LucideX, LucideUsers],
   templateUrl: './user-detail.html',
 })
 export class UserDetailComponent implements OnInit {
@@ -16,6 +18,7 @@ export class UserDetailComponent implements OnInit {
   private router = inject(Router);
   private svc = inject(AdminUsersService);
   private sanitizer = inject(DomSanitizer);
+  private auth = inject(AuthService);
 
   user = signal<any>(null);
   showTicketModal = signal(false);
@@ -75,6 +78,15 @@ export class UserDetailComponent implements OnInit {
     }
   }
   closeTicketModal(): void { this.showTicketModal.set(false); this.ticketModalUrl.set(''); }
+
+  showPassengerList(tripId: string): void {
+    const token = this.auth.getToken();
+    if (!token) return;
+    window.open(
+      environment.apiUrl.admin + '/trips/passenger-list/' + tripId + '?token=' + token,
+      '_blank',
+    );
+  }
   safeUrl(url: string) { return this.sanitizer.bypassSecurityTrustResourceUrl(url); }
 
   genderLabel(g: string): string { return g === 'MALE' ? 'ذكر' : g === 'FEMALE' ? 'أنثى' : g; }
