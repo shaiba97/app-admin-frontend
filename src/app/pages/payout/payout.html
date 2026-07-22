@@ -512,7 +512,7 @@
             <p class="text-sm">فشل تحميل الإيصال</p>
           </div>
         } @else {
-          <img [src]="viewingReceipt()" (error)="receiptError.set(true)" class="w-full h-auto rounded-xl" alt="إيصال الدفع">
+          <img [src]="receiptSafeUrl()" (error)="receiptError.set(true)" class="w-full h-auto rounded-xl" alt="إيصال الدفع">
         }
       </div>
     </div>

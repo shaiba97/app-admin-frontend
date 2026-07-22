@@ -466,10 +466,19 @@
   <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" (click)="closeReceipt()">
     <div class="relative max-w-3xl w-full max-h-[90vh]" (click)="$event.stopPropagation()">
       <button (click)="closeReceipt()" class="absolute -top-4 -left-4 z-10 w-9 h-9 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:bg-gray-100 transition-all"><svg lucideX class="w-5 h-5"></svg></button>
-      @if (viewingReceipt()!.endsWith('.pdf')) {
-        <iframe [src]="viewingReceipt()!" class="w-full h-[85vh] rounded-2xl shadow-2xl bg-white" frameborder="0"></iframe>
+      @if (receiptError()) {
+        <div class="flex flex-col items-center justify-center h-[50vh] rounded-2xl shadow-2xl bg-white p-8 text-center">
+          <svg lucideX class="w-12 h-12 text-red-400 mb-4"></svg>
+          <p class="text-sm font-bold text-gray-800">تعذر تحميل الإيصال</p>
+          <p class="text-xs text-gray-500 mt-1">قد يكون الملف غير متاح أو تم حذفه. حاول إعادة رفعه.</p>
+          <button (click)="closeReceipt()" class="mt-4 px-4 py-2 rounded-xl bg-gray-100 text-xs font-bold text-gray-600 hover:bg-gray-200 transition-all">إغلاق</button>
+        </div>
       } @else {
-        <img [src]="viewingReceipt()!" alt="إيصال الدفع" class="w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl">
+        @if (viewingReceipt()!.endsWith('.pdf')) {
+          <iframe [src]="receiptSafeUrl()!" class="w-full h-[85vh] rounded-2xl shadow-2xl bg-white" frameborder="0" (error)="receiptError.set(true)"></iframe>
+        } @else {
+          <img [src]="receiptSafeUrl()!" alt="إيصال الدفع" class="w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl" (error)="receiptError.set(true)">
+        }
       }
     </div>
   </div>

@@ -1,6 +1,7 @@
 import { Component, signal, inject, OnInit, computed, OnDestroy } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer } from '@angular/platform-browser';
 import { LucideWallet, LucideTrendingUp, LucideClock, LucidePlus, LucidePencil, LucideTrash2, LucideCheck, LucideX, LucideLoaderCircle, LucideRefreshCw, LucideEye, LucideCreditCard, LucideBadgeDollarSign, LucideToggleLeft, LucideToggleRight, LucideReceiptText, LucideShield, LucideActivity, LucideBarChart3, LucideCircleDollarSign } from '@lucide/angular';
 import { FinancialService } from '../../core/services/financial/financial.service';
 import { PlatformFeeService } from '../../core/services/platform-fee/platform-fee.service';
@@ -65,6 +66,17 @@ export class FinancialComponent implements OnInit, OnDestroy {
   rejectingId = signal<string | null>(null);
   rejectReason = signal('');
   viewingReceipt = signal<string | null>(null);
+  receiptError = signal(false);
+
+  private sanitizer = inject(DomSanitizer);
+
+  receiptSafeUrl = computed(() => {
+    const url = this.viewingReceipt();
+    if (!url) return null;
+    return url.endsWith('.pdf')
+      ? this.sanitizer.bypassSecurityTrustResourceUrl(url)
+      : this.sanitizer.bypassSecurityTrustUrl(url);
+  });
 
   showFeeForm = signal(false);
   editingFeeId = signal<string | null>(null);
@@ -139,8 +151,13 @@ export class FinancialComponent implements OnInit, OnDestroy {
     this.financialSvc.rejectPayment(id, this.rejectReason()).subscribe({ next: () => { this.rejectingId.set(null); this.showSuccess('تم رفض الدفعة وإلغاء الحجز'); this.refresh(); }, error: (e: any) => { this.showError(e?.error?.message ?? 'حدث خطأ أثناء الرفض'); this.rejectingId.set(null); } });
   }
 
-  viewReceipt(url: string): void { this.viewingReceipt.set(url.startsWith('http') ? url : `${environment.apiUrl.admin.replace('/api', '')}${url}`); }
-  closeReceipt(): void { this.viewingReceipt.set(null); }
+  viewReceipt(url: string): void {
+    const baseUrl = environment.apiUrl.admin.replace(/\/api\/?$/, '');
+    const fullUrl = url.startsWith('http') ? url : `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+    this.viewingReceipt.set(fullUrl);
+    this.receiptError.set(false);
+  }
+  closeReceipt(): void { this.viewingReceipt.set(null); this.receiptError.set(false); }
 
   openCreateFee(): void { this.editingFeeId.set(null); this.feeAmount.set(0); this.feeCurrency.set('جنيه سوداني'); this.feeLabel.set(''); this.showFeeForm.set(true); }
   openEditFee(fee: any): void { this.editingFeeId.set(fee.id); this.feeAmount.set(Number(fee.amount)); this.feeCurrency.set(fee.currency); this.feeLabel.set(fee.label ?? ''); this.showFeeForm.set(true); }

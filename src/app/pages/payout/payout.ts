@@ -1,4 +1,5 @@
-import { Component, signal, inject, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { Component, signal, inject, OnInit, OnDestroy, ChangeDetectionStrategy, computed } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { LucideBuilding2, LucideBus, LucideArrowLeft, LucideCheck, LucideX, LucideClock, LucideLoaderCircle, LucideWallet, LucideCircleDollarSign, LucideActivity, LucideReceiptText, LucideRefreshCw, LucideAlertCircle, LucideImage, LucideEye } from '@lucide/angular';
 import { PayoutService } from '../../core/services/payout/payout.service';
 import { WsService } from '../../core/services/ws.service';
@@ -38,6 +39,14 @@ export class PayoutComponent implements OnInit, OnDestroy {
   requestReceiptFiles = signal<Map<string, File>>(new Map());
   viewingReceipt = signal<string | null>(null);
   receiptError = signal(false);
+
+  private sanitizer = inject(DomSanitizer);
+
+  receiptSafeUrl = computed(() => {
+    const url = this.viewingReceipt();
+    if (!url) return null;
+    return this.sanitizer.bypassSecurityTrustUrl(url);
+  });
 
   tabs: { id: Tab; label: string; icon: string }[] = [
     { id: 'companies', label: 'الشركات', icon: 'building2' },
@@ -161,7 +170,8 @@ export class PayoutComponent implements OnInit, OnDestroy {
   }
 
   getFileUrl(path: string): string {
-    return path.startsWith('http') ? path : `${environment.apiUrl.admin.replace('/api', '')}${path}`;
+    const baseUrl = environment.apiUrl.admin.replace(/\/api\/?$/, '');
+    return path.startsWith('http') ? path : `${baseUrl}${path.startsWith('/') ? '' : '/'}${path}`;
   }
 
   viewReceipt(url: string): void {
