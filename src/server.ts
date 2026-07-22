@@ -10,12 +10,12 @@ import { join } from 'node:path';
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
 const app = express();
+app.set('trust proxy', true);
 const angularApp = new AngularNodeAppEngine({
   allowedHosts: [
     'app-admin-frontend.onrender.com',
     ...(process.env['ALLOWED_HOSTS']?.split(',') ?? []),
   ],
-  trustProxyHeaders: true,
 });
 
 /**
