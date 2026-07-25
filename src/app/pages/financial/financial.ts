@@ -80,10 +80,13 @@ export class FinancialComponent implements OnInit, OnDestroy {
 
   showFeeForm = signal(false);
   editingFeeId = signal<string | null>(null);
-  feeAmount = signal(0);
-  feeCurrency = signal('جنيه سوداني');
+  feePercentage = signal(0);
   feeLabel = signal('');
   isSavingFee = signal(false);
+  calcExample = computed(() => {
+    const example = 2500;
+    return Math.round((example * this.feePercentage()) / 100);
+  });
 
   showExpenseForm = signal(false);
   editingExpenseId = signal<string | null>(null);
@@ -159,13 +162,13 @@ export class FinancialComponent implements OnInit, OnDestroy {
   }
   closeReceipt(): void { this.viewingReceipt.set(null); this.receiptError.set(false); }
 
-  openCreateFee(): void { this.editingFeeId.set(null); this.feeAmount.set(0); this.feeCurrency.set('جنيه سوداني'); this.feeLabel.set(''); this.showFeeForm.set(true); }
-  openEditFee(fee: any): void { this.editingFeeId.set(fee.id); this.feeAmount.set(Number(fee.amount)); this.feeCurrency.set(fee.currency); this.feeLabel.set(fee.label ?? ''); this.showFeeForm.set(true); }
+  openCreateFee(): void { this.editingFeeId.set(null); this.feePercentage.set(0); this.feeLabel.set(''); this.showFeeForm.set(true); }
+  openEditFee(fee: any): void { this.editingFeeId.set(fee.id); this.feePercentage.set(Number(fee.percentage)); this.feeLabel.set(fee.label ?? ''); this.showFeeForm.set(true); }
   closeFeeForm(): void { this.showFeeForm.set(false); this.editingFeeId.set(null); }
   saveFee(): void {
-    if (!this.feeAmount() || this.feeAmount() <= 0) { this.showError('يرجى إدخال مبلغ صحيح'); return; }
+    if (!this.feePercentage() || this.feePercentage() < 1 || this.feePercentage() > 100) { this.showError('يرجى إدخال نسبة صحيحة (1-100)'); return; }
     this.isSavingFee.set(true);
-    const data = { amount: this.feeAmount(), currency: this.feeCurrency(), label: this.feeLabel() || undefined };
+    const data = { percentage: this.feePercentage(), label: this.feeLabel() || undefined };
     (this.editingFeeId() ? this.feeSvc.update(this.editingFeeId()!, data) : this.feeSvc.create(data)).subscribe({ next: () => { this.isSavingFee.set(false); this.closeFeeForm(); this.showSuccess('تم حفظ الرسوم بنجاح'); this.loadFees(); this.loadOverview(); }, error: (e: any) => { this.showError(e?.error?.message ?? 'حدث خطأ'); this.isSavingFee.set(false); } });
   }
   activateFee(id: string): void { this.feeSvc.activate(id).subscribe({ next: () => { this.showSuccess('تم تفعيل الرسوم'); this.loadFees(); this.loadOverview(); }, error: (e: any) => this.showError(e?.error?.message) }); }

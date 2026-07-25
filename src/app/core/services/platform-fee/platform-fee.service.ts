@@ -10,8 +10,8 @@ export class PlatformFeeService {
 
   getAll(): Observable<any> { return this.http.get(`${this.api}/admin/platform-fee`); }
   getActive(): Observable<any> { return this.http.get(`${this.api}/admin/platform-fee/active`); }
-  create(data: { amount: number; currency?: string; label?: string }): Observable<any> { return this.http.post(`${this.api}/admin/platform-fee`, data); }
-  update(id: string, data: any): Observable<any> { return this.http.patch(`${this.api}/admin/platform-fee/${id}`, data); }
+  create(data: { percentage: number; label?: string }): Observable<any> { return this.http.post(`${this.api}/admin/platform-fee`, data); }
+  update(id: string, data: { percentage?: number; label?: string }): Observable<any> { return this.http.patch(`${this.api}/admin/platform-fee/${id}`, data); }
   activate(id: string): Observable<any> { return this.http.patch(`${this.api}/admin/platform-fee/${id}/activate`, {}); }
   remove(id: string): Observable<any> { return this.http.delete(`${this.api}/admin/platform-fee/${id}`); }
 }

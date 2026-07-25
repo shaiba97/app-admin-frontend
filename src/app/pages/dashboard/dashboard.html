@@ -382,8 +382,8 @@
             @else { <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[var(--danger-light)] text-[var(--danger)]">غير مفعل</span> }
           </div>
           @if (d.platform?.activePlatformFee) {
-            <div class="flex items-baseline gap-1.5"><span class="text-3xl font-extrabold text-[var(--text-primary)] tabular-nums">{{ toArabic(d.platform.activePlatformFee.amount) }}</span><span class="text-sm text-[var(--text-muted)]">{{ d.platform.activePlatformFee.currency }}</span></div>
-            <p class="text-[10px] text-[var(--text-muted)]">{{ d.platform.activePlatformFee.label ?? 'رسوم خدمة ثابتة على كل تذكرة' }}</p>
+            <div class="flex items-baseline gap-1.5"><span class="text-3xl font-extrabold text-[var(--text-primary)] tabular-nums">{{ toArabic(d.platform.activePlatformFee.percentage) }}٪</span></div>
+            <p class="text-[10px] text-[var(--text-muted)]">{{ d.platform.activePlatformFee.label ?? 'نسبة مئوية من سعر التذكرة' }}</p>
           } @else {
             <p class="text-sm text-[var(--text-muted)]">لم يتم تحديد رسوم المنصة بعد</p>
             <button (click)="goTo('/financial'); $event.stopPropagation()" class="text-xs font-bold text-[var(--primary)] hover:underline self-start">إضافة رسوم الآن ←</button>

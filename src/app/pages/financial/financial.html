@@ -86,8 +86,8 @@
                 <div class="w-10 h-10 rounded-xl bg-[var(--primary)] flex items-center justify-center"><svg lucideBadgeDollarSign class="w-5 h-5 text-white"></svg></div>
                 <div class="flex flex-col gap-0.5">
                   <span class="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">رسوم المنصة النشطة</span>
-                  <div class="flex items-baseline gap-1.5"><span class="text-2xl font-extrabold text-[var(--text-primary)] tabular-nums">{{ toArabic(ov.activeFee.amount) }}</span><span class="text-sm text-[var(--text-secondary)]">{{ ov.activeFee.currency }}</span>@if (ov.activeFee.label) {<span class="text-xs text-[var(--text-muted)]">— {{ ov.activeFee.label }}</span>}</div>
-                  <p class="text-xs text-[var(--text-muted)]">تُضاف تلقائياً على سعر كل تذكرة يشتريها العميل</p>
+                  <div class="flex items-baseline gap-1.5"><span class="text-2xl font-extrabold text-[var(--text-primary)] tabular-nums">{{ toArabic(ov.activeFee.percentage) }}٪</span>@if (ov.activeFee.label) {<span class="text-xs text-[var(--text-muted)]">— {{ ov.activeFee.label }}</span>}</div>
+                  <p class="text-xs text-[var(--text-muted)]">تُخصم نسبة مئوية من سعر التذكرة عند تأكيد الحجز</p>
                 </div>
               </div>
               <button (click)="switchTab('platform-fee')" class="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-[var(--border)] text-xs font-bold text-[var(--text-secondary)] hover:border-[var(--border-strong)] transition-all"><svg lucidePencil class="w-3.5 h-3.5"></svg>إدارة الرسوم</button>
@@ -262,20 +262,29 @@
             <div class="flex flex-wrap gap-3 text-xs text-[var(--text-secondary)]">
               <div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-[var(--bg-base)] border border-[var(--border)]"><span class="font-bold text-[var(--text-primary)]">١</span>الشركة تحدد سعر التذكرة</div>
               <div class="text-[var(--text-muted)] self-center">+</div>
-              <div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-[var(--primary)] text-white"><span class="font-bold">٢</span>تفية تضيف الرسوم الثابتة</div>
+              <div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-[var(--primary)] text-white"><span class="font-bold">٢</span>نسبة تفية ({{ fees().length > 0 ? fees()[0].percentage : 5 }}%)</div>
               <div class="text-[var(--text-muted)] self-center">=</div>
               <div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-[var(--bg-base)] border border-[var(--border)]"><span class="font-bold text-[var(--text-primary)]">٣</span>العميل يدفع المجموع</div>
             </div>
-            <p class="text-xs text-[var(--text-muted)] mt-1">مثال: سعر التذكرة ١٠٠ جنيه + رسوم المنصة ٥ جنيه = العميل يدفع ١٠٥ جنيه. الشركة تستلم ١٠٠ جنيه كاملة. تفية تكسب ٥ جنيه.</p>
+              <p class="text-xs text-[var(--text-muted)] mt-1">مثال: تذكرة بسعر ٢٥٠٠ جنيه ونسبة ١٠٪ = ٢٥٠ جنيه رسوم منصة. إجمالي مايدفعه العميل: ٢٧٥٠ جنيه.</p>
           </div>
         </div>
         @if (showFeeForm()) {
           <div class="bg-[var(--bg-card)] rounded-2xl border-2 border-[var(--border-strong)] p-5 flex flex-col gap-4">
             <h3 class="text-sm font-bold text-[var(--text-primary)]">{{ editingFeeId() ? 'تعديل الرسوم' : 'إضافة رسوم جديدة' }}</h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div class="flex flex-col gap-1.5"><label class="text-xs font-bold text-[var(--text-primary)]">المبلغ (جنيه) *</label><input type="number" [ngModel]="feeAmount()" (ngModelChange)="feeAmount.set(+$event)" placeholder="مثال: 5" min="0" step="0.5" class="px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-base)] text-sm font-semibold text-[var(--text-primary)] outline-none focus:border-[var(--border-strong)] transition-all"></div>
-              <div class="flex flex-col gap-1.5"><label class="text-xs font-bold text-[var(--text-primary)]">العملة</label><select [ngModel]="feeCurrency()" (ngModelChange)="feeCurrency.set($event)" class="px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-base)] text-sm font-semibold text-[var(--text-primary)] outline-none focus:border-[var(--border-strong)] transition-all"><option value="جنيه سوداني">جنيه سوداني</option><option value="دولار أمريكي">دولار أمريكي</option></select></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-bold text-[var(--text-primary)]">نسبة العمولة (%) *</label>
+                <div class="relative">
+                  <input type="number" [ngModel]="feePercentage()" (ngModelChange)="feePercentage.set(+$event)" placeholder="مثال: 10" min="1" max="100" step="0.1" class="px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-base)] text-sm font-semibold text-[var(--text-primary)] outline-none w-full focus:border-[var(--border-strong)] transition-all">
+                  <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-[var(--primary)]">٪</span>
+                </div>
+                <p class="text-xs text-[var(--text-muted)]">نسبة مئوية تُخصم من سعر التذكرة (1-100)</p>
+              </div>
               <div class="flex flex-col gap-1.5"><label class="text-xs font-bold text-[var(--text-primary)]">تسمية (اختياري)</label><input type="text" [ngModel]="feeLabel()" (ngModelChange)="feeLabel.set($event)" placeholder="مثال: رسوم خدمة" class="px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-base)] text-sm font-semibold text-[var(--text-primary)] outline-none focus:border-[var(--border-strong)] transition-all"></div>
+            </div>
+            <div class="px-4 py-3 rounded-xl bg-[var(--primary-light)] border border-[var(--border)]">
+              <p class="text-sm text-right text-[var(--text-primary)]">مثال: تذكرة بسعر ٢٥٠٠ جنيه بنسبة {{ feePercentage() }}٪ = {{ calcExample() }} جنيه رسوم منصة</p>
             </div>
             <div class="flex items-center gap-3">
               <button (click)="saveFee()" [disabled]="isSavingFee()" class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--primary)] text-white text-sm font-bold disabled:opacity-50 hover:bg-[var(--primary-hover)] transition-all active:scale-95">@if (isSavingFee()) {<svg lucideLoaderCircle class="w-4 h-4 animate-spin"></svg>} @else {<svg lucideCheck class="w-4 h-4"></svg>}{{ isSavingFee() ? 'جاري الحفظ...' : 'حفظ' }}</button>
@@ -292,7 +301,7 @@
               <div class="flex items-center gap-4">
                 <div class="w-12 h-12 rounded-2xl flex items-center justify-center" [class.bg-[var(--primary)]]="fee.isActive" [class.bg-[var(--bg-base)]]="!fee.isActive" [class.border]="!fee.isActive" [class.border-[var(--border)]]="!fee.isActive"><svg lucideBadgeDollarSign class="w-6 h-6" [class.text-white]="fee.isActive" [class.text-[var(--text-muted)]]="!fee.isActive"></svg></div>
                 <div class="flex flex-col gap-0.5">
-                  <div class="flex items-baseline gap-2 flex-wrap"><span class="text-2xl font-extrabold text-[var(--text-primary)] tabular-nums">{{ toArabic(fee.amount) }}</span><span class="text-sm text-[var(--text-muted)]">{{ fee.currency }}</span>@if (fee.label) {<span class="text-xs text-[var(--text-muted)] font-medium">— {{ fee.label }}</span>}@if (fee.isActive) {<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[var(--success-light)] text-[var(--success)]">نشط ✓</span>}</div>
+                  <div class="flex items-baseline gap-2 flex-wrap"><span class="text-2xl font-extrabold text-[var(--text-primary)] tabular-nums">{{ toArabic(fee.percentage) }}٪</span>@if (fee.label) {<span class="text-xs text-[var(--text-muted)] font-medium">— {{ fee.label }}</span>}@if (fee.isActive) {<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[var(--success-light)] text-[var(--success)]">نشط ✓</span>}</div>
                   <span class="text-xs text-[var(--text-muted)]">أُضيف في {{ fmtDate(fee.createdAt) }}</span>
                 </div>
               </div>
