@@ -154,7 +154,8 @@ export class FinancialComponent implements OnInit, OnDestroy {
     this.financialSvc.rejectPayment(id, this.rejectReason()).subscribe({ next: () => { this.rejectingId.set(null); this.showSuccess('تم رفض الدفعة وإلغاء الحجز'); this.refresh(); }, error: (e: any) => { this.showError(e?.error?.message ?? 'حدث خطأ أثناء الرفض'); this.rejectingId.set(null); } });
   }
 
-  viewReceipt(url: string): void {
+  viewReceipt(url: string | null): void {
+    if (!url) return;
     const baseUrl = environment.apiUrl.admin.replace(/\/api\/?$/, '');
     const fullUrl = url.startsWith('http') ? url : `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
     this.viewingReceipt.set(fullUrl);
