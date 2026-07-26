@@ -33,9 +33,6 @@ export class AwardsComponent implements OnInit, OnDestroy {
   formDescription = signal('');
   formIcon = signal('');
   formMinBookings = signal(0);
-  formMinTrips = signal(0);
-  formActiveDays = signal(0);
-  formConsecutiveDays = signal(0);
   formAwardValue = signal(0);
   isSaving = signal(false);
 
@@ -85,9 +82,6 @@ export class AwardsComponent implements OnInit, OnDestroy {
     this.formDescription.set('');
     this.formIcon.set('');
     this.formMinBookings.set(0);
-    this.formMinTrips.set(0);
-    this.formActiveDays.set(0);
-    this.formConsecutiveDays.set(0);
     this.formAwardValue.set(0);
     this.showForm.set(true);
   }
@@ -98,9 +92,6 @@ export class AwardsComponent implements OnInit, OnDestroy {
     this.formDescription.set(p.description ?? '');
     this.formIcon.set(p.icon ?? '');
     this.formMinBookings.set(p.minBookings ?? 0);
-    this.formMinTrips.set(p.minTrips ?? 0);
-    this.formActiveDays.set(p.activeDays ?? 0);
-    this.formConsecutiveDays.set(p.consecutiveDays ?? 0);
     this.formAwardValue.set(Number(p.awardValue));
     this.showForm.set(true);
   }
@@ -115,9 +106,7 @@ export class AwardsComponent implements OnInit, OnDestroy {
       description: this.formDescription().trim() || undefined,
       icon: this.formIcon() || undefined,
       minBookings: this.formMinBookings(),
-      minTrips: this.formMinTrips(),
-      activeDays: this.formActiveDays(),
-      consecutiveDays: this.formConsecutiveDays(),
+
       awardValue: this.formAwardValue(),
     };
     (this.editingId() ? this.svc.updatePack(this.editingId()!, data) : this.svc.createPack(data)).subscribe({

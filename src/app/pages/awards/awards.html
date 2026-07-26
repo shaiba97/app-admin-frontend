@@ -53,10 +53,7 @@
               </div>
               <div class="flex flex-col gap-1.5 md:col-span-2"><label class="text-xs font-bold text-[var(--text-primary)]">الوصف</label><input type="text" [ngModel]="formDescription()" (ngModelChange)="formDescription.set($event)" placeholder="وصف المكافأة" class="px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-base)] text-sm font-semibold text-[var(--text-primary)] outline-none focus:border-[var(--border-strong)] transition-all"></div>
               <div class="flex flex-col gap-1.5"><label class="text-xs font-bold text-[var(--text-primary)]">قيمة المكافأة *</label><input type="number" [ngModel]="formAwardValue()" (ngModelChange)="formAwardValue.set(+$event)" placeholder="مثال: 5000" min="0" class="px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-base)] text-sm font-semibold text-[var(--text-primary)] outline-none focus:border-[var(--border-strong)] transition-all"></div>
-              <div class="flex flex-col gap-1.5"><label class="text-xs font-bold text-[var(--text-primary)]">عدد الحجوزات</label><input type="number" [ngModel]="formMinBookings()" (ngModelChange)="formMinBookings.set(+$event)" min="0" class="px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-base)] text-sm font-semibold text-[var(--text-primary)] outline-none focus:border-[var(--border-strong)] transition-all"></div>
-              <div class="flex flex-col gap-1.5"><label class="text-xs font-bold text-[var(--text-primary)]">عدد الرحلات</label><input type="number" [ngModel]="formMinTrips()" (ngModelChange)="formMinTrips.set(+$event)" min="0" class="px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-base)] text-sm font-semibold text-[var(--text-primary)] outline-none focus:border-[var(--border-strong)] transition-all"></div>
-              <div class="flex flex-col gap-1.5"><label class="text-xs font-bold text-[var(--text-primary)]">أيام النشاط</label><input type="number" [ngModel]="formActiveDays()" (ngModelChange)="formActiveDays.set(+$event)" min="0" placeholder="عدد الأيام التي حجز فيها" class="px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-base)] text-sm font-semibold text-[var(--text-primary)] outline-none focus:border-[var(--border-strong)] transition-all"></div>
-              <div class="flex flex-col gap-1.5"><label class="text-xs font-bold text-[var(--text-primary)]">أيام متتالية</label><input type="number" [ngModel]="formConsecutiveDays()" (ngModelChange)="formConsecutiveDays.set(+$event)" min="0" placeholder="عدد الأيام المتتالية" class="px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-base)] text-sm font-semibold text-[var(--text-primary)] outline-none focus:border-[var(--border-strong)] transition-all"></div>
+              <div class="flex flex-col gap-1.5"><label class="text-xs font-bold text-[var(--text-primary)]">عدد الحجوزات</label><input type="number" [ngModel]="formMinBookings()" (ngModelChange)="formMinBookings.set(+$event)" min="0" placeholder="الحد الأدنى لعدد الحجوزات" class="px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-base)] text-sm font-semibold text-[var(--text-primary)] outline-none focus:border-[var(--border-strong)] transition-all"></div>
             </div>
             <div class="flex items-center gap-3">
               <button (click)="save()" [disabled]="isSaving()" class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--primary)] text-white text-sm font-bold disabled:opacity-50 hover:bg-[var(--primary-hover)] transition-all active:scale-95">
@@ -115,24 +112,7 @@
                     <span class="font-bold text-[var(--text-primary)]">{{ toArabic(p.minBookings) }}+</span>
                   </div>
                 }
-                @if (p.minTrips) {
-                  <div class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--bg-base)] border border-[var(--border)]">
-                    <span class="text-[var(--text-muted)]">الرحلات:</span>
-                    <span class="font-bold text-[var(--text-primary)]">{{ toArabic(p.minTrips) }}+</span>
-                  </div>
-                }
-                @if (p.activeDays) {
-                  <div class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--bg-base)] border border-[var(--border)]">
-                    <span class="text-[var(--text-muted)]">أيام النشاط:</span>
-                    <span class="font-bold text-[var(--text-primary)]">{{ toArabic(p.activeDays) }}+</span>
-                  </div>
-                }
-                @if (p.consecutiveDays) {
-                  <div class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--bg-base)] border border-[var(--border)]">
-                    <span class="text-[var(--text-muted)]">أيام متتالية:</span>
-                    <span class="font-bold text-[var(--text-primary)]">{{ toArabic(p.consecutiveDays) }}+</span>
-                  </div>
-                }
+
               </div>
             </div>
           }
