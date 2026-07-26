@@ -21,6 +21,7 @@ export const routes: Routes = [
         ],
       },
       { path: 'payout', redirectTo: 'financial/payout', pathMatch: 'full' },
+      { path: 'awards', loadComponent: () => import('./pages/awards/awards').then(m => m.AwardsComponent) },
       { path: 'notifications', loadComponent: () => import('./pages/notifications/notifications').then(m => m.NotificationsComponent) },
       { path: 'platform-fee', loadComponent: () => import('./pages/platform-fee/platform-fee').then(m => m.PlatformFeeComponent) },
       { path: 'payment-accounts', loadComponent: () => import('./pages/payment-accounts/payment-accounts').then(m => m.PaymentAccountsComponent) },
