@@ -29,7 +29,72 @@
       </div>
     </div>
 
-    <!-- SECTION 2: USER — BOOKING HISTORY -->
+    <!-- SECTION 2: USER — AWARDS -->
+    @if (u.role === 'USER' || u.role === 'CUSTOMER') {
+      <div class="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] p-5 flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-base font-bold text-[var(--text-primary)]">المكافآت</h2>
+          @if (!awardsLoading() && userAwards()) {
+            <span class="text-xs text-[var(--text-muted)]">
+              {{ toArabic(userAwards().approvedCount) }} مقبولة • {{ toArabic(userAwards().count) }} إجمالي
+            </span>
+          }
+        </div>
+        @if (awardsLoading()) {
+          <div class="flex items-center justify-center py-6">
+            <svg class="w-5 h-5 animate-spin text-[var(--text-muted)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.2-8.4"/></svg>
+          </div>
+        } @else if (!userAwards() || userAwards().awards.length === 0) {
+          <div class="flex flex-col items-center py-6 text-[var(--text-muted)]">
+            <svg class="w-8 h-8 opacity-30 mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.5 14a7.5 7.5 0 0 0-5 0"/><path d="m8 21 4-4 4 4"/></svg>
+            <p class="text-sm">لا توجد مكافآت</p>
+          </div>
+        } @else {
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            @for (a of userAwards().awards; track a.id) {
+              <div class="rounded-xl border p-4 flex flex-col gap-3"
+                [class.border-emerald-200]="a.status === 'APPROVED'"
+                [class.border-amber-200]="a.status === 'PENDING'"
+                [class.border-[var(--border)]]="a.status !== 'APPROVED' && a.status !== 'PENDING'"
+                [class.bg-emerald-50/40]="a.status === 'APPROVED'"
+                [class.bg-amber-50/40]="a.status === 'PENDING'">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="text-xl">{{ a.Pack?.icon || '🏆' }}</span>
+                    <span class="text-sm font-bold text-[var(--text-primary)]">{{ a.Pack?.title }}</span>
+                  </div>
+                  <span class="text-[11px] font-bold px-2 py-0.5 rounded-full"
+                    [class.bg-emerald-100]="a.status === 'APPROVED'"
+                    [class.text-emerald-700]="a.status === 'APPROVED'"
+                    [class.bg-amber-100]="a.status === 'PENDING'"
+                    [class.text-amber-700]="a.status === 'PENDING'"
+                    [class.bg-red-100]="a.status === 'REJECTED'"
+                    [class.text-red-600]="a.status === 'REJECTED'">
+                    {{ awardStatusLabel(a.status) }}
+                  </span>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-[var(--text-muted)]">القيمة</span>
+                  <span class="font-bold text-[var(--text-primary)] tabular-nums">{{ formatAmount(a.Pack?.awardValue ?? 0) }} ج</span>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-[var(--text-muted)]">تاريخ المنح</span>
+                  <span class="font-medium text-[var(--text-primary)]">{{ fmtDate(a.createdAt) }}</span>
+                </div>
+              </div>
+            }
+          </div>
+          @if (userAwards().totalValue > 0) {
+            <div class="flex items-center justify-between px-4 py-3 rounded-xl bg-[var(--bg-base)] border border-[var(--border)]">
+              <span class="text-xs font-bold text-[var(--text-muted)]">الإجمالي المعتمد</span>
+              <span class="text-base font-extrabold text-[var(--text-primary)] tabular-nums">{{ formatAmount(userAwards().totalValue) }} ج</span>
+            </div>
+          }
+        }
+      </div>
+    }
+
+    <!-- SECTION 3: USER — BOOKING HISTORY -->
     @if (u.role === 'USER' || u.role === 'CUSTOMER') {
       <div class="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] overflow-hidden">
         <div class="px-5 py-4 border-b border-[var(--border)]">
@@ -93,7 +158,7 @@
       </div>
     }
 
-    <!-- SECTION 2: COMPANY — BUS DETAILS -->
+    <!-- SECTION 4: COMPANY — BUS DETAILS -->
     @if (u.role === 'COMPANY') {
       <div class="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] overflow-hidden">
         <div class="px-5 py-4 border-b border-[var(--border)]">
@@ -119,7 +184,7 @@
         }
       </div>
 
-      <!-- SECTION 3: COMPANY — TRIPS TABLE -->
+      <!-- SECTION 5: COMPANY — TRIPS TABLE -->
       @if (u.Bus?.length > 0) {
         <div class="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] overflow-hidden">
           <div class="px-5 py-4 border-b border-[var(--border)]">
