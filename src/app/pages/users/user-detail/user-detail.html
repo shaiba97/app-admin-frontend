@@ -28,16 +28,18 @@
         <div class="flex flex-col gap-1"><span class="text-xs text-[var(--text-muted)]">الحالة</span><span class="text-sm font-semibold" [ngClass]="u.isActive ? 'text-[var(--success)]' : 'text-[var(--danger)]'">{{ u.isActive ? 'نشط' : 'موقوف' }}</span></div>
       </div>
       @if (u.role === 'USER' || u.role === 'CUSTOMER') {
-        <div class="border-t border-[var(--border)] pt-4">
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="border-t border-[var(--border)] pt-4 flex flex-col gap-4">
+          <div class="grid grid-cols-2 gap-4">
             <div class="flex flex-col gap-1"><span class="text-xs text-[var(--text-muted)]">إجمالي الحجوزات</span><span class="text-sm font-bold text-[var(--text-primary)]">{{ toArabic(totalBookings()) }}</span></div>
             <div class="flex flex-col gap-1"><span class="text-xs text-[var(--text-muted)]">الحجوزات المؤكدة</span><span class="text-sm font-bold text-emerald-600">{{ toArabic(confirmedBookings()) }}</span></div>
-            @if (awardsSummary(); as s) {
+          </div>
+          @if (awardsSummary(); as s) {
+            <div class="grid grid-cols-2 gap-4">
               <div class="flex flex-col gap-1"><span class="text-xs text-[var(--text-muted)]">إجمالي المكافآت</span><span class="text-sm font-bold text-[var(--text-primary)] tabular-nums">{{ formatAmount(s.totalEarnings) }} ج</span></div>
               <div class="flex flex-col gap-1"><span class="text-xs text-[var(--text-muted)]">المتبقي</span><span class="text-sm font-bold text-amber-600 tabular-nums">{{ formatAmount(s.available) }} ج</span></div>
-              <div class="flex flex-col gap-1"><span class="text-xs text-[var(--text-muted)]">المسحوب</span><span class="text-sm font-bold text-[var(--text-muted)] tabular-nums">{{ formatAmount(s.withdrawn) }} ج</span></div>
-            }
-          </div>
+              <div class="flex flex-col gap-1 col-span-2"><span class="text-xs text-[var(--text-muted)]">المسحوب</span><span class="text-sm font-bold text-[var(--text-muted)] tabular-nums">{{ formatAmount(s.withdrawn) }} ج</span></div>
+            </div>
+          }
         </div>
       }
     </div>
