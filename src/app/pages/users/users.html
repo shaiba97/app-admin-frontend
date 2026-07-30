@@ -69,7 +69,7 @@
                       </div>
                     </div>
                   </td>
-                  <td class="px-5 py-3.5 w-[120px] text-right"><span class="text-sm text-[var(--text-secondary)] truncate block">{{ u.phone || u.email || '—' }}</span></td>
+                  <td class="px-5 py-3.5 w-[120px]"><span class="text-sm text-[var(--text-secondary)] truncate block text-right" style="direction:rtl">{{ u.phone || u.email || '—' }}</span></td>
                   <td class="px-5 py-3.5">
                     <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-bold" [ngClass]="roleBadgeClass(u.role)">{{ roleLabel(u.role) }}</span>
                   </td>
