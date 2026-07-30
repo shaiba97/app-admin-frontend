@@ -9,7 +9,7 @@
   } @else if (user()) {
     @let u = user();
 
-    <!-- SECTION 1: USER DETAILS -->
+    <!-- SECTION 1: PERSONAL DETAILS + BOOKINGS + AWARDS SUMMARY -->
     <div class="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] p-6 flex flex-col gap-5">
       <div class="flex items-center gap-4">
         <div class="w-14 h-14 rounded-full bg-[var(--primary)] flex items-center justify-center"><svg lucideUser class="w-7 h-7 text-white"></svg></div>
@@ -23,71 +23,87 @@
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="flex flex-col gap-1"><span class="text-xs text-[var(--text-muted)]">البريد الإلكتروني</span><span class="text-sm font-semibold text-[var(--text-primary)]">{{ u.email || '—' }}</span></div>
-        <div class="flex flex-col gap-1"><span class="text-xs text-[var(--text-muted)]">رقم الهاتف</span><span class="text-sm font-semibold text-[var(--text-primary)]" >{{ u.phone || '—' }}</span></div>
+        <div class="flex flex-col gap-1"><span class="text-xs text-[var(--text-muted)]">رقم الهاتف</span><span class="text-sm font-semibold text-[var(--text-primary)]">{{ u.phone || '—' }}</span></div>
         <div class="flex flex-col gap-1"><span class="text-xs text-[var(--text-muted)]">تاريخ التسجيل</span><span class="text-sm font-semibold text-[var(--text-primary)]">{{ u.createdAt | date:'yyyy-MM-dd' }}</span></div>
         <div class="flex flex-col gap-1"><span class="text-xs text-[var(--text-muted)]">الحالة</span><span class="text-sm font-semibold" [ngClass]="u.isActive ? 'text-[var(--success)]' : 'text-[var(--danger)]'">{{ u.isActive ? 'نشط' : 'موقوف' }}</span></div>
       </div>
+      @if (u.role === 'USER' || u.role === 'CUSTOMER') {
+        <div class="border-t border-[var(--border)] pt-4">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="flex flex-col gap-1"><span class="text-xs text-[var(--text-muted)]">إجمالي الحجوزات</span><span class="text-sm font-bold text-[var(--text-primary)]">{{ toArabic(totalBookings()) }}</span></div>
+            <div class="flex flex-col gap-1"><span class="text-xs text-[var(--text-muted)]">الحجوزات المؤكدة</span><span class="text-sm font-bold text-emerald-600">{{ toArabic(confirmedBookings()) }}</span></div>
+            @if (awardsSummary(); as s) {
+              <div class="flex flex-col gap-1"><span class="text-xs text-[var(--text-muted)]">إجمالي المكافآت</span><span class="text-sm font-bold text-[var(--text-primary)] tabular-nums">{{ formatAmount(s.totalEarnings) }} ج</span></div>
+              <div class="flex flex-col gap-1"><span class="text-xs text-[var(--text-muted)]">المتبقي</span><span class="text-sm font-bold text-amber-600 tabular-nums">{{ formatAmount(s.available) }} ج</span></div>
+              <div class="flex flex-col gap-1"><span class="text-xs text-[var(--text-muted)]">المسحوب</span><span class="text-sm font-bold text-[var(--text-muted)] tabular-nums">{{ formatAmount(s.withdrawn) }} ج</span></div>
+            }
+          </div>
+        </div>
+      }
     </div>
 
-    <!-- SECTION 2: USER — AWARDS -->
+    <!-- SECTION 2: AWARDS CARD — DETAILED TABLE -->
     @if (u.role === 'USER' || u.role === 'CUSTOMER') {
-      <div class="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] p-5 flex flex-col gap-4">
-        <div class="flex items-center justify-between">
+      <div class="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] overflow-hidden">
+        <div class="px-5 py-4 border-b border-[var(--border)] flex items-center justify-between">
           <h2 class="text-base font-bold text-[var(--text-primary)]">المكافآت</h2>
-          @if (!awardsLoading() && userAwards()) {
-            <span class="text-xs text-[var(--text-muted)]">
-              {{ toArabic(userAwards().approvedCount) }} مقبولة • {{ toArabic(userAwards().count) }} إجمالي
-            </span>
+          @if (userAwards(); as a) {
+            <span class="text-xs text-[var(--text-muted)]">{{ toArabic(a.approvedCount) }} مقبولة • {{ toArabic(a.count) }} إجمالي</span>
           }
         </div>
         @if (awardsLoading()) {
-          <div class="flex items-center justify-center py-6">
+          <div class="flex items-center justify-center py-10">
             <svg class="w-5 h-5 animate-spin text-[var(--text-muted)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.2-8.4"/></svg>
           </div>
         } @else if (!userAwards() || userAwards().awards.length === 0) {
-          <div class="flex flex-col items-center py-6 text-[var(--text-muted)]">
+          <div class="flex flex-col items-center py-10 text-[var(--text-muted)]">
             <svg class="w-8 h-8 opacity-30 mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.5 14a7.5 7.5 0 0 0-5 0"/><path d="m8 21 4-4 4 4"/></svg>
             <p class="text-sm">لا توجد مكافآت</p>
           </div>
         } @else {
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            @for (a of userAwards().awards; track a.id) {
-              <div class="rounded-xl border p-4 flex flex-col gap-3"
-                [class.border-emerald-200]="a.status === 'APPROVED'"
-                [class.border-amber-200]="a.status === 'PENDING'"
-                [class.border-[var(--border)]]="a.status !== 'APPROVED' && a.status !== 'PENDING'"
-                [class.bg-emerald-50/40]="a.status === 'APPROVED'"
-                [class.bg-amber-50/40]="a.status === 'PENDING'">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2">
-                    <span class="text-xl">{{ a.Pack?.icon || '🏆' }}</span>
-                    <span class="text-sm font-bold text-[var(--text-primary)]">{{ a.Pack?.title }}</span>
-                  </div>
-                  <span class="text-[11px] font-bold px-2 py-0.5 rounded-full"
-                    [class.bg-emerald-100]="a.status === 'APPROVED'"
-                    [class.text-emerald-700]="a.status === 'APPROVED'"
-                    [class.bg-amber-100]="a.status === 'PENDING'"
-                    [class.text-amber-700]="a.status === 'PENDING'"
-                    [class.bg-red-100]="a.status === 'REJECTED'"
-                    [class.text-red-600]="a.status === 'REJECTED'">
-                    {{ awardStatusLabel(a.status) }}
-                  </span>
-                </div>
-                <div class="flex items-center justify-between text-xs">
-                  <span class="text-[var(--text-muted)]">القيمة</span>
-                  <span class="font-bold text-[var(--text-primary)] tabular-nums">{{ formatAmount(a.Pack?.awardValue ?? 0) }} ج</span>
-                </div>
-                <div class="flex items-center justify-between text-xs">
-                  <span class="text-[var(--text-muted)]">تاريخ المنح</span>
-                  <span class="font-medium text-[var(--text-primary)]">{{ fmtDate(a.createdAt) }}</span>
-                </div>
-              </div>
-            }
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead><tr class="bg-[var(--bg-base)] border-b border-[var(--border)]">
+                <th class="text-right px-4 py-3 text-xs font-bold text-[var(--text-muted)]">الباقة</th>
+                <th class="text-right px-4 py-3 text-xs font-bold text-[var(--text-muted)]">الحد الأدنى للحجوزات</th>
+                <th class="text-right px-4 py-3 text-xs font-bold text-[var(--text-muted)]">القيمة</th>
+                <th class="text-right px-4 py-3 text-xs font-bold text-[var(--text-muted)]">الحالة</th>
+                <th class="text-right px-4 py-3 text-xs font-bold text-[var(--text-muted)]">تاريخ الطلب</th>
+                <th class="text-right px-4 py-3 text-xs font-bold text-[var(--text-muted)]">تاريخ الصرف</th>
+              </tr></thead>
+              <tbody>
+                @for (a of userAwards().awards; track a.id) {
+                  <tr class="border-b border-[var(--border)] hover:bg-[var(--bg-base)] transition-colors">
+                    <td class="px-4 py-3">
+                      <div class="flex items-center gap-2">
+                        <span class="text-lg">{{ a.Pack?.icon || '🏆' }}</span>
+                        <span class="text-sm font-bold text-[var(--text-primary)]">{{ a.Pack?.title }}</span>
+                      </div>
+                    </td>
+                    <td class="px-4 py-3 text-[var(--text-primary)] font-medium">{{ toArabic(a.Pack?.minBookings ?? 0) }}</td>
+                    <td class="px-4 py-3 font-semibold tabular-nums text-[var(--text-primary)]">{{ formatAmount(a.Pack?.awardValue ?? 0) }} ج</td>
+                    <td class="px-4 py-3">
+                      <span class="px-2 py-0.5 rounded-full text-xs font-bold"
+                        [class.bg-emerald-100]="a.status === 'APPROVED'"
+                        [class.text-emerald-700]="a.status === 'APPROVED'"
+                        [class.bg-amber-100]="a.status === 'PENDING'"
+                        [class.text-amber-700]="a.status === 'PENDING'"
+                        [class.bg-red-100]="a.status === 'REJECTED'"
+                        [class.text-red-600]="a.status === 'REJECTED'">
+                        {{ awardStatusLabel(a.status) }}
+                      </span>
+                    </td>
+                    <td class="px-4 py-3 text-[var(--text-muted)]">{{ fmtDate(a.createdAt) }}</td>
+                    <td class="px-4 py-3 text-[var(--text-muted)]">{{ a.status === 'APPROVED' ? fmtDate(a.updatedAt) : '—' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
           </div>
-          @if (userAwards().totalValue > 0) {
-            <div class="flex items-center justify-between px-4 py-3 rounded-xl bg-[var(--bg-base)] border border-[var(--border)]">
+          @if (awardsSummary(); as s) {
+            <div class="flex items-center justify-between px-5 py-3 border-t border-[var(--border)] bg-[var(--bg-base)]">
               <span class="text-xs font-bold text-[var(--text-muted)]">الإجمالي المعتمد</span>
-              <span class="text-base font-extrabold text-[var(--text-primary)] tabular-nums">{{ formatAmount(userAwards().totalValue) }} ج</span>
+              <span class="text-base font-extrabold text-[var(--text-primary)] tabular-nums">{{ formatAmount(s.totalEarnings) }} ج</span>
             </div>
           }
         }

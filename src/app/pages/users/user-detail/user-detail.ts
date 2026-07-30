@@ -31,6 +31,15 @@ export class UserDetailComponent implements OnInit {
   bookingsPage = signal(1);
   bookingsPerPage = 7;
 
+  totalBookings = computed(() => (this.user()?.Booking ?? []).length);
+  confirmedBookings = computed(() => this.user()?._confirmedBookings ?? 0);
+
+  awardsSummary = computed(() => {
+    const a = this.userAwards();
+    if (!a) return null;
+    return { totalEarnings: a.totalValue ?? 0, withdrawn: a.withdrawn ?? 0, available: a.available ?? 0 };
+  });
+
   paginatedBookings = computed(() => {
     const u = this.user();
     const all = u?.Booking ?? [];
