@@ -40,6 +40,17 @@ export class UserDetailComponent implements OnInit {
     return { totalEarnings: a.totalValue ?? 0, withdrawn: a.withdrawn ?? 0, available: a.available ?? 0 };
   });
 
+  companyProfits = computed(() => {
+    const u = this.user();
+    if (!u) return null;
+    return {
+      totalProfits: u._totalProfits ?? 0,
+      totalPaidOut: u._totalPaidOut ?? 0,
+      remaining: u._remainingProfits ?? 0,
+      bank: u.CompanyBankAccount ?? null,
+    };
+  });
+
   paginatedBookings = computed(() => {
     const u = this.user();
     const all = u?.Booking ?? [];
