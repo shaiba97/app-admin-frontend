@@ -395,7 +395,7 @@
                       <td class="px-4 py-3 text-[10px] text-[var(--text-muted)] whitespace-nowrap">{{ fmtDateTime(entry.createdAt) }}</td>
                       <td class="px-4 py-3 text-xs text-[var(--text-secondary)] max-w-[150px] truncate">{{ entry.note || '—' }}</td>
                       <td class="px-4 py-3">
-                        @if (entry.receiptFile) {
+                        @if (entry.receiptFile || entry.receiptData) {
                           <button (click)="viewReceipt(entry)" class="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-[var(--border)] text-[10px] font-semibold text-[var(--text-secondary)] hover:border-[var(--primary)] hover:text-[var(--primary)] transition-all">
                             <svg lucideEye class="w-3 h-3"></svg>
                             عرض
@@ -429,7 +429,7 @@
                 }
                 <div class="flex items-center justify-between">
                   <span class="text-xs text-[var(--text-muted)]">{{ fmtDateTime(entry.createdAt) }}</span>
-                  @if (entry.receiptFile) {
+                  @if (entry.receiptFile || entry.receiptData) {
                     <button (click)="viewReceipt(entry)" class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-[var(--border)] text-[10px] font-semibold text-[var(--text-secondary)] hover:border-[var(--primary)] hover:text-[var(--primary)] transition-all">
                       <svg lucideEye class="w-3 h-3"></svg>
                       الإيصال
