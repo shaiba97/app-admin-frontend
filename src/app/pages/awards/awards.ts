@@ -190,9 +190,15 @@ export class AwardsComponent implements OnInit, OnDestroy {
     return path.startsWith('http') ? path : `${baseUrl}${path.startsWith('/') ? '' : '/'}${path}`;
   }
 
-  viewReceipt(url: string): void {
+  viewReceipt(entry: { receiptFile?: string; receiptData?: string; receiptMime?: string }): void {
     this.receiptError.set(false);
-    this.viewingReceipt.set(this.getFileUrl(url));
+    if (entry?.receiptData) {
+      this.viewingReceipt.set(`data:${entry.receiptMime ?? 'image/jpeg'};base64,${entry.receiptData}`);
+    } else if (entry?.receiptFile) {
+      this.viewingReceipt.set(this.getFileUrl(entry.receiptFile));
+    } else {
+      this.viewingReceipt.set(null);
+    }
   }
 
   closeReceipt(): void {
