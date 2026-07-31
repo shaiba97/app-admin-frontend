@@ -85,7 +85,7 @@ export class FinancialComponent implements OnInit, OnDestroy {
   isSavingFee = signal(false);
   calcExample = computed(() => {
     const example = 2500;
-    return Math.round((example * this.feePercentage()) / 100);
+    return Math.round(example * this.feePercentage()) / 100;
   });
 
   showExpenseForm = signal(false);
@@ -202,7 +202,10 @@ export class FinancialComponent implements OnInit, OnDestroy {
   showError(msg: string): void { this.error.set(msg ?? 'حدث خطأ'); this.successMsg.set(''); setTimeout(() => this.error.set(''), 5000); }
 
   toArabic(n: number | string): string { return String(n).replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[+d]); }
-  formatAmount(n: number): string { return this.toArabic(Math.round(n).toLocaleString('en')); }
+  formatAmount(n: number): string {
+    const v = Math.round((Number(n) || 0) * 100) / 100;
+    return this.toArabic(v.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })).replace(/,/g, '٬').replace(/\./g, '٫');
+  }
   fmtDate(d: any): string { if (!d) return '—'; return this.toArabic(new Date(d).toLocaleDateString('ar-SA', { year: 'numeric', month: 'short', day: 'numeric' })); }
   statusLabel(s: string): string { const m: Record<string, string> = { PENDING: 'قيد الانتظار', SUCCESS: 'مؤكد', FAILED: 'مرفوض', REFUNDED: 'مسترد' }; return m[s] ?? s; }
   statusClasses(s: string): string[] {

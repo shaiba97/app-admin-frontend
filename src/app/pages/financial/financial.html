@@ -289,7 +289,7 @@
               <div class="flex flex-col gap-1.5"><label class="text-xs font-bold text-[var(--text-primary)]">تسمية (اختياري)</label><input type="text" [ngModel]="feeLabel()" (ngModelChange)="feeLabel.set($event)" placeholder="مثال: رسوم خدمة" class="px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-base)] text-sm font-semibold text-[var(--text-primary)] outline-none focus:border-[var(--border-strong)] transition-all"></div>
             </div>
             <div class="px-4 py-3 rounded-xl bg-[var(--primary-light)] border border-[var(--border)]">
-              <p class="text-sm text-right text-[var(--text-primary)]">مثال: تذكرة بسعر ٢٥٠٠ جنيه بنسبة {{ feePercentage() }}٪ = {{ calcExample() }} جنيه رسوم منصة</p>
+              <p class="text-sm text-right text-[var(--text-primary)]">مثال: تذكرة بسعر ٢٥٠٠ جنيه بنسبة {{ feePercentage() }}٪ = {{ formatAmount(calcExample()) }} جنيه رسوم منصة</p>
             </div>
             <div class="flex items-center gap-3">
               <button (click)="saveFee()" [disabled]="isSavingFee()" class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--primary)] text-white text-sm font-bold disabled:opacity-50 hover:bg-[var(--primary-hover)] transition-all active:scale-95">@if (isSavingFee()) {<svg lucideLoaderCircle class="w-4 h-4 animate-spin"></svg>} @else {<svg lucideCheck class="w-4 h-4"></svg>}{{ isSavingFee() ? 'جاري الحفظ...' : 'حفظ' }}</button>
