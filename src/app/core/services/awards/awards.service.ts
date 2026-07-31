@@ -14,6 +14,14 @@ export class AwardsService {
   removePack(id: string): Observable<any> { return this.http.delete(`${this.api}/admin/awards/packs/${id}`); }
   getPending(): Observable<any> { return this.http.get(`${this.api}/admin/awards/pending`); }
   getUserAwards(userId: string): Observable<any> { return this.http.get(`${this.api}/admin/awards/user/${userId}`); }
-  approve(id: string): Observable<any> { return this.http.post(`${this.api}/admin/awards/approve/${id}`, {}); }
-  reject(id: string): Observable<any> { return this.http.post(`${this.api}/admin/awards/reject/${id}`, {}); }
+  getHistory(): Observable<any> { return this.http.get(`${this.api}/admin/awards/history`); }
+  approve(id: string, receiptFile?: File): Observable<any> {
+    if (receiptFile) {
+      const fd = new FormData();
+      fd.append('receiptFile', receiptFile);
+      return this.http.post(`${this.api}/admin/awards/approve/${id}`, fd);
+    }
+    return this.http.post(`${this.api}/admin/awards/approve/${id}`, {});
+  }
+  reject(id: string, reason?: string): Observable<any> { return this.http.post(`${this.api}/admin/awards/reject/${id}`, { reason }); }
 }

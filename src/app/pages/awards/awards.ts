@@ -1,9 +1,11 @@
-import { Component, signal, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, signal, inject, OnInit, OnDestroy, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer } from '@angular/platform-browser';
 import { AwardsService } from '../../core/services/awards/awards.service';
 import { WsService } from '../../core/services/ws.service';
+import { environment } from '../../../environments/environment';
 
-type Tab = 'packs' | 'pending';
+type Tab = 'packs' | 'pending' | 'history';
 
 @Component({
   selector: 'app-awards',
@@ -13,16 +15,19 @@ type Tab = 'packs' | 'pending';
 export class AwardsComponent implements OnInit, OnDestroy {
   private svc = inject(AwardsService);
   private ws = inject(WsService);
+  private sanitizer = inject(DomSanitizer);
   private wsCleanups: (() => void)[] = [];
 
   activeTab = signal<Tab>('packs');
   tabs: { id: Tab; label: string }[] = [
     { id: 'packs', label: 'المكافآت' },
-    { id: 'pending', label: 'طلبات المكافآت' },
+    { id: 'pending', label: 'الطلبات المعلقة' },
+    { id: 'history', label: 'السجل' },
   ];
 
   packs = signal<any[]>([]);
   pending = signal<any[]>([]);
+  history = signal<any[]>([]);
   isLoading = signal(false);
   error = signal('');
   successMsg = signal('');
@@ -38,6 +43,17 @@ export class AwardsComponent implements OnInit, OnDestroy {
 
   approvingId = signal<string | null>(null);
   rejectingId = signal<string | null>(null);
+  receiptFiles = signal<Map<string, File>>(new Map());
+  rejectReasons = signal<Map<string, string>>(new Map());
+  shownRejectInput = signal<string | null>(null);
+
+  viewingReceipt = signal<string | null>(null);
+  receiptError = signal(false);
+  receiptSafeUrl = computed(() => {
+    const url = this.viewingReceipt();
+    if (!url) return null;
+    return this.sanitizer.bypassSecurityTrustUrl(url);
+  });
 
   packIcons = ['🏆', '⭐', '🎖️', '👑', '💎', '🌟', '🎯', '🏅'];
 
@@ -51,6 +67,7 @@ export class AwardsComponent implements OnInit, OnDestroy {
   refresh(): void {
     this.loadPacks();
     this.loadPending();
+    this.loadHistory();
   }
 
   loadPacks(): void {
@@ -68,11 +85,19 @@ export class AwardsComponent implements OnInit, OnDestroy {
     });
   }
 
+  loadHistory(): void {
+    this.svc.getHistory().subscribe({
+      next: (r: any) => { this.history.set(r?.data ?? r ?? []); },
+      error: () => {},
+    });
+  }
+
   switchTab(tab: Tab): void {
     this.activeTab.set(tab);
     this.error.set('');
     this.successMsg.set('');
     if (tab === 'pending') this.loadPending();
+    else if (tab === 'history') this.loadHistory();
     else this.loadPacks();
   }
 
@@ -106,7 +131,6 @@ export class AwardsComponent implements OnInit, OnDestroy {
       description: this.formDescription().trim() || undefined,
       icon: this.formIcon() || undefined,
       minBookings: this.formMinBookings(),
-
       awardValue: this.formAwardValue(),
     };
     (this.editingId() ? this.svc.updatePack(this.editingId()!, data) : this.svc.createPack(data)).subscribe({
@@ -123,20 +147,57 @@ export class AwardsComponent implements OnInit, OnDestroy {
     });
   }
 
+  onReceiptSelected(event: Event, id: string): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file) {
+      this.receiptFiles.update(m => new Map(m).set(id, file));
+    }
+  }
+
+  getReceiptName(id: string): string { return this.receiptFiles().get(id)?.name ?? ''; }
+  clearReceipt(id: string): void { this.receiptFiles.update(m => { const n = new Map(m); n.delete(id); return n; }); }
+
   approve(id: string): void {
+    const file = this.receiptFiles().get(id);
     this.approvingId.set(id);
-    this.svc.approve(id).subscribe({
-      next: () => { this.approvingId.set(null); this.showSuccess('تم قبول المكافأة'); this.loadPending(); this.loadPacks(); },
+    this.svc.approve(id, file).subscribe({
+      next: () => { this.approvingId.set(null); this.receiptFiles.update(m => { const n = new Map(m); n.delete(id); return n; }); this.showSuccess('تم قبول المكافأة'); this.loadPending(); this.loadPacks(); this.loadHistory(); },
       error: (e: any) => { this.approvingId.set(null); this.showError(e?.error?.message ?? 'فشل القبول'); },
     });
   }
 
+  toggleRejectInput(id: string): void {
+    this.shownRejectInput.set(this.shownRejectInput() === id ? null : id);
+  }
+
   reject(id: string): void {
+    const reason = this.rejectReasons().get(id);
+    if (!reason?.trim()) { this.showError('يرجى كتابة سبب الرفض'); return; }
     this.rejectingId.set(id);
-    this.svc.reject(id).subscribe({
-      next: () => { this.rejectingId.set(null); this.showSuccess('تم رفض المكافأة'); this.loadPending(); },
+    this.svc.reject(id, reason).subscribe({
+      next: () => { this.rejectingId.set(null); this.rejectReasons.update(m => { const n = new Map(m); n.delete(id); return n; }); this.shownRejectInput.set(null); this.showSuccess('تم رفض المكافأة'); this.loadPending(); this.loadHistory(); },
       error: (e: any) => { this.rejectingId.set(null); this.showError(e?.error?.message ?? 'فشل الرفض'); },
     });
+  }
+
+  onRejectReasonChange(id: string, value: string): void {
+    this.rejectReasons.update(m => new Map(m).set(id, value));
+  }
+
+  getFileUrl(path: string): string {
+    const baseUrl = environment.apiUrl.admin.replace(/\/api\/?$/, '');
+    return path.startsWith('http') ? path : `${baseUrl}${path.startsWith('/') ? '' : '/'}${path}`;
+  }
+
+  viewReceipt(url: string): void {
+    this.receiptError.set(false);
+    this.viewingReceipt.set(this.getFileUrl(url));
+  }
+
+  closeReceipt(): void {
+    this.viewingReceipt.set(null);
+    this.receiptError.set(false);
   }
 
   showSuccess(msg: string): void { this.successMsg.set(msg); this.error.set(''); setTimeout(() => this.successMsg.set(''), 4000); }
@@ -145,5 +206,6 @@ export class AwardsComponent implements OnInit, OnDestroy {
   toArabic(n: number | string): string { return String(n).replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[+d]); }
   formatAmount(n: number | string): string { return this.toArabic(Math.round(Number(n)).toLocaleString('en')); }
   fmtDate(d: any): string { if (!d) return '—'; return this.toArabic(new Date(d).toLocaleDateString('ar-SA', { year: 'numeric', month: 'short', day: 'numeric' })); }
+  fmtDateTime(d: any): string { if (!d) return '—'; return this.toArabic(new Date(d).toLocaleDateString('ar-SA', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })); }
   statusLabel(s: string): string { const m: Record<string, string> = { PENDING: 'قيد الانتظار', APPROVED: 'مقبول', REJECTED: 'مرفوض' }; return m[s] ?? s; }
 }
