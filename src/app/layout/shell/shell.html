@@ -20,7 +20,16 @@
               @case ('wallet') { <svg lucideWallet class="w-5 h-5 flex-shrink-0"></svg> }
               @case ('phone') { <svg lucidePhone class="w-5 h-5 flex-shrink-0"></svg> }
               @case ('newspaper') { <svg lucideNewspaper class="w-5 h-5 flex-shrink-0"></svg> }
-              @case ('bell') { <svg lucideBell class="w-5 h-5 flex-shrink-0"></svg> }
+              @case ('bell') {
+                <span class="relative inline-flex flex-shrink-0">
+                  <svg lucideBell class="w-5 h-5"></svg>
+                  @if (notifSvc.unreadCount() > 0) {
+                    <span class="absolute -top-0.5 -right-0.5 min-w-[14px] h-3.5 px-1 bg-red-500 text-white text-[8px] font-bold rounded-full flex items-center justify-center">
+                      {{ notifSvc.unreadCount() > 99 ? '+99' : toArabicNum(notifSvc.unreadCount()) }}
+                    </span>
+                  }
+                </span>
+              }
               @case ('user') { <svg lucideUser class="w-5 h-5 flex-shrink-0"></svg> }
             }
             @if (sidebarOpen()) { <span class="text-sm font-semibold whitespace-nowrap">{{ item.label }}</span> }
