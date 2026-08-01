@@ -1,9 +1,9 @@
-import { Component, inject, signal } from '@angular/core'; import { Router } from '@angular/router'; import { FormsModule } from '@angular/forms'; import { AuthService, LoginResponse } from '../../../core/services/auth/auth.service';
+import { Component, inject, signal } from '@angular/core'; import { Router } from '@angular/router'; import { FormsModule } from '@angular/forms'; import { NgOptimizedImage } from '@angular/common'; import { AuthService, LoginResponse } from '../../../core/services/auth/auth.service';
 @Component({
-  selector: 'app-login', imports: [FormsModule],
+  selector: 'app-login', imports: [FormsModule, NgOptimizedImage],
   template: `<div dir="rtl" class="min-h-screen bg-[var(--bg-base)] flex items-center justify-center p-4">
     <div class="w-full max-w-md flex flex-col gap-6">
-      <div class="flex flex-col items-center gap-3"><div class="w-16 h-16 rounded-2xl bg-[var(--primary)] flex items-center justify-center"><span class="text-white text-3xl font-extrabold">R</span></div><h1 class="text-2xl font-extrabold text-[var(--text-primary)]">لوحة الإدارة</h1><p class="text-sm text-[var(--text-muted)]">تفية — منصة حجز التذاكر</p></div>
+      <div class="flex flex-col items-center gap-3"><div class="w-16 h-16 rounded-2xl bg-white flex items-center justify-center"><img ngSrc="/adminLogo.png" width="40" height="40" priority alt="تفية" class="object-contain"></div><h1 class="text-2xl font-extrabold text-[var(--text-primary)]">لوحة الإدارة</h1><p class="text-sm text-[var(--text-muted)]">تفية — منصة حجز التذاكر</p></div>
       <div class="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] p-6 flex flex-col gap-4">
         <div class="flex flex-col gap-1.5"><label class="text-sm font-semibold text-[var(--text-primary)]">البريد الإلكتروني أو رقم الهاتف</label>
           <input type="text" [ngModel]="identifier()" (ngModelChange)="identifier.set($event)" placeholder="admin@tafiya.com" class="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-base)] text-sm text-[var(--text-primary)] outline-none focus:border-[var(--text-primary)] transition-all"></div>
