@@ -211,11 +211,14 @@
           </div>
           <div class="flex flex-col gap-1.5">
             <label class="text-xs font-bold text-[var(--text-secondary)]">الدور</label>
-            <select [ngModel]="formRole()" (ngModelChange)="formRole.set($event)" class="w-full cursor-pointer px-4 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-base)] text-sm text-[var(--text-primary)] outline-none focus:border-[var(--text-primary)] transition-all">
+            <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="الدور">
               @for (r of roles; track r.value) {
-                <option [value]="r.value">{{ r.label }}</option>
+                <label class="flex items-center gap-2 cursor-pointer px-3 py-2 rounded-xl border bg-[var(--bg-base)] text-sm text-[var(--text-primary)] transition-all" [class]="formRole() === r.value ? 'border-[var(--primary)]' : 'border-[var(--border)]'">
+                  <input type="radio" name="user-role" [value]="r.value" [checked]="formRole() === r.value" (change)="formRole.set(r.value)" class="w-4 h-4 accent-[var(--primary)] cursor-pointer">
+                  {{ r.label }}
+                </label>
               }
-            </select>
+            </div>
           </div>
         </div>
 
