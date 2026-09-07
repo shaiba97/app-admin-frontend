@@ -1,9 +1,9 @@
 export const environment = {
   production: true,
   apiUrl: {
-    admin:    'https://app-backend-gz2l.onrender.com/api',
-    company:  'https://app-backend-gz2l.onrender.com/api-company',
-    customer: 'https://app-backend-gz2l.onrender.com/api-customer',
+    admin:    'https://app-backend-production-4da9.up.railway.app/api',
+    company:  'https://app-backend-production-4da9.up.railway.app/api-company',
+    customer: 'https://app-backend-production-4da9.up.railway.app/api-customer',
   },
-  wsUrl: 'https://app-backend-gz2l.onrender.com',
+  wsUrl: 'https://app-backend-production-4da9.up.railway.app',
 };
