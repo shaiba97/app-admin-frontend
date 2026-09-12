@@ -1,9 +1,9 @@
 export const environment = {
   production: false,
   apiUrl: {
-    admin: 'http://localhost:3000/api',
-    company: 'http://localhost:3001/api',
-    customer: 'http://localhost:3002/api',
+    admin:    'https://app-backend-production-4da9.up.railway.app/api',
+    company:  'https://app-backend-production-4da9.up.railway.app/api-company',
+    customer: 'https://app-backend-production-4da9.up.railway.app/api-customer',
   },
-  wsUrl: 'http://localhost:3000',
+  wsUrl: 'https://app-backend-production-4da9.up.railway.app',
 };
